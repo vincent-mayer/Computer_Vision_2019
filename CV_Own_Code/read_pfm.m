@@ -1,4 +1,4 @@
-function data = read_pfm(path)
+function data = read_pfm(filepath)
     % read_pfm .pfm Datei auslesen.
     %   data = read_pfm(path)
     %   Diese Funktion liest die .pfm Datei unter dem Pfad path aus und 
@@ -12,7 +12,7 @@ function data = read_pfm(path)
     
     %% Bildinformationen auslesen   
     % Die Datei wird geöffnet 
-    fileID = fopen(path);
+    fileID = fopen(filepath);
     
     % Farbbild/Grauwertbild wird bestimmt (siehe Website in der
     % Funktionsbeschreibung).
