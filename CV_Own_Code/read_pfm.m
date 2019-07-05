@@ -42,18 +42,24 @@ function data = read_pfm(filepath)
     %% Bilddaten auslesen
     % Grauwertbild aus binary file auslesen.
     if (channels == 1)
-        pfm_data = uint8(fread(fileID, Inf, 'single', 0 ,endian));
+        pfm_data = fread(fileID, Inf, 'single', 0 ,endian);
         data = rot90(reshape(pfm_data(1:end)',[width, height]));
     end
     
     % Farbbild aus binary file auslesen.
     if (channels == 3)
         data = zeros(width,height,3);
-        pfm_data = uint8(fread(fileID, Inf, 'single', 0 ,endian));
+        pfm_data = fread(fileID, Inf, 'single', 0 ,endian);
         data(:,:,1) = rot90(reshape(pfm_data(1:3:end),[width, height]));
         data(:,:,2) = rot90(reshape(pfm_data(2:3:end),[width, height]));
         data(:,:,3) = rot90(reshape(pfm_data(3:3:end),[width, height]));
     end
+    
+    % Bilddaten in uint8 umwandeln.
+    interval = [0 255];
+    data = ((interval(2)-interval(1))/(max(data(data~=Inf),[],'all')-min(data(data~=Inf),[],'all')))*(data-min(data(data~=Inf),[],'all'))+interval(1);
+    data(data==Inf) = 0;
+    data = uint8(data);
     
     fclose(fileID);
 end
