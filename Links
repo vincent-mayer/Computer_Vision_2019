@@ -1,0 +1,11 @@
+https://github.com/amitthere/stereo-vision-and-segmentation  --> Python code, gute Disparity Map
+
+https://github.com/MrLukeKR/Stereo-Matching  --> Different MATLAB Algorithms
+
+https://mediatum.ub.tum.de/doc/1084651/document.pdf  --> Paper von Diepold
+
+https://www.intelrealsense.com/stereo-depth-vision-basics/  --> Intel Realsense Depth Estimation
+
+https://docs.opencv.org/trunk/d3/d14/tutorial_ximgproc_disparity_filtering.html --> accurate map, python code
+
+http://www.ijeit.com/vol%202/Issue%208/IJEIT1412201302_45.pdf  --> Shows that there is only small difference between SAD, SSD, NCC. SAD least computationally expensive
