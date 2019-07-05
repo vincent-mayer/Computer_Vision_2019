@@ -1,12 +1,21 @@
-%% Bilder laden
 clc
 clear all
 close all
-Image1 =imread('im0.png');
-Image2 =imread('im1.png');
+
+%% Bilder laden
+% Projektpfad initialisieren
+project_path = erase(mfilename('fullpath'),'\CV_Own_Code\Skript');
+
+% Kompletten Pfad zum MATLAB-Suchpfad hinzufügen
+addpath(genpath(project_path));
+
+% Bilder und K-Matritzen des Motorrads einlesen
+path_motorcycle = [project_path '\Pictures\motorcycle'];
+[K1, K2, Image1, Image2] = load_path(path_motorcycle);
 IGray1 = rgb_to_gray(Image1);
 IGray2 = rgb_to_gray(Image2);
 plot_corr = 1;
+
 %% Harris-Merkmale berechnen
 Merkmale1 = harris_detektor(IGray1,'segment_length',9,'k',0.05,'min_dist',40,'N',50,'do_plot',false);
 Merkmale2 = harris_detektor(IGray2,'segment_length',9,'k',0.05,'min_dist',40,'N',50,'do_plot',false);
@@ -32,12 +41,6 @@ for i=1:1:size(Korrespondenzen_robust,2)
 end
 hold off;
 end
-%% Disparity Map 
-% Read in Calibration matrices
-str=fileread('calib.txt');
-parts = regexp(str, '\[|\]', 'split');
-K1 = double(str2num(parts{2}));
-K2 = double(str2num(parts{4}));
 
 %% Berechne die Essentielle Matrix
 E = achtpunktalgorithmus(Korrespondenzen_robust, K1);
