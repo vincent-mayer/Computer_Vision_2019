@@ -1,4 +1,4 @@
-function data = read_pfm(path)
+function data = read_pfm(filepath)
     % read_pfm .pfm Datei auslesen.
     %   data = read_pfm(path)
     %   Diese Funktion liest die .pfm Datei unter dem Pfad path aus und 
@@ -12,7 +12,7 @@ function data = read_pfm(path)
     
     %% Bildinformationen auslesen   
     % Die Datei wird geöffnet 
-    fileID = fopen(path);
+    fileID = fopen(filepath);
     
     % Farbbild/Grauwertbild wird bestimmt (siehe Website in der
     % Funktionsbeschreibung).
@@ -42,16 +42,17 @@ function data = read_pfm(path)
     %% Bilddaten auslesen
     % Grauwertbild aus binary file auslesen.
     if (channels == 1)
-        data = uint8(fread(fileID, [width, height], 'single', 0 ,endian));
+        pfm_data = uint8(fread(fileID, Inf, 'single', 0 ,endian));
+        data = rot90(reshape(pfm_data(1:end)',[width, height]));
     end
     
     % Farbbild aus binary file auslesen.
     if (channels == 3)
         data = zeros(width,height,3);
-        pfm_data = uint8(fread(fileID, [width, height], 'single', 0 ,endian));
-        data(:,:,1) = reshape(pfm_data(1:3:end),[width, height]);
-        data(:,:,2) = reshape(pfm_data(2:3:end),[width, height]);
-        data(:,:,3) = reshape(pfm_data(3:3:end),[width, height]);
+        pfm_data = uint8(fread(fileID, Inf, 'single', 0 ,endian));
+        data(:,:,1) = rot90(reshape(pfm_data(1:3:end),[width, height]));
+        data(:,:,2) = rot90(reshape(pfm_data(2:3:end),[width, height]));
+        data(:,:,3) = rot90(reshape(pfm_data(3:3:end),[width, height]));
     end
     
     fclose(fileID);
