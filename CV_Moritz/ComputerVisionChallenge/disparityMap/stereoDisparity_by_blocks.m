@@ -90,5 +90,4 @@ function DispMap = stereoDisparity_by_blocks(left, right, halfBlockSize, dispari
     
     elapsed_time = toc;
     fprintf('Calculating disparity map took %.2f min.\n', elapsed_time / 60.0);
-   hans =2 ; 
 end
