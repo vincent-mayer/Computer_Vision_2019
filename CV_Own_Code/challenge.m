@@ -1,18 +1,18 @@
 %% Computer Vision Challenge 2019
 
 % Group number:
-group_number = 0;
+group_number = 59;
 
 % Group members:
 % members = {'Max Mustermann', 'Johannes Daten'};
-members = {};
+members = { 'Andreas Gaßner', 'Øivind Harket Bakke', 'Vincent Mayer','Robert Lefringhausen', 'Theophil Spiegeler Castaneda'};
 
 % Email-Address (from Moodle!):
 % mail = {'ga99abc@tum.de', 'daten.hannes@tum.de'};
-mail = {};
+mail = {'andreas.gassner@tum.de','oivind.bakke@tum.de','vincent.mayer@tum.de','robert.lefringhausen@tum.de','ge82bab@mytum.de'};
 
 %% Start timer here
-
+tic
 
 %% Disparity Map
 % Specify path to scene folder containing img0 img1 and calib
@@ -32,7 +32,7 @@ mail = {};
 % p = validate_dmap(D, G)
 
 %% Stop timer here
-elapsed_time = 0;
+elapsed_time = toc;
 
 
 %% Print Results
