@@ -7,9 +7,7 @@ classdef test < matlab.unittest.TestCase
     % Check if all your required variables are set after executing 
     % the file 'challenge.m'
     
-    
-%Achtung, muss in Main-Datei eingefügt werden!!
-%run(test);
+ 
 
     properties
     end
@@ -20,7 +18,7 @@ classdef test < matlab.unittest.TestCase
             testCase.verifyFalse(check_toolboxes('verify_dmap.m'));
         end
         function test_variables(testCase)%,group_number, members, mail, elapsed_time, D,R,T,p)
-            challenge;
+            load('challenge.mat');
             testCase.verifyNotEmpty(members);
             testCase.verifyNotEmpty(mail);
             testCase.verifyEqual(group_number,59);
