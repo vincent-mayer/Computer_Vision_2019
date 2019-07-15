@@ -96,7 +96,7 @@ D=IGray1;
  gt_path = selpath; 
 %
 % Load the ground truth
- G = read_pfm(gt_path+'/disp0.pfm');;
+ G = read_pfm(gt_path+'/disp0.pfm');
 % 
 % Estimate the quality of the calculated disparity map
  p = validate_dmap(D, G);

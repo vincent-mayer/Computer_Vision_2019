@@ -12,7 +12,6 @@ classdef test < matlab.unittest.TestCase
     properties
     end
     methods (Test)
-	addpath('/lib/');
         function test_toolboxes(testCase)
             testCase.verifyFalse(check_toolboxes('challenge.m'));
             testCase.verifyFalse(check_toolboxes('disparity_map.m'));
