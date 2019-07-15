@@ -36,7 +36,7 @@ classdef test < matlab.unittest.TestCase
             %pass parameters for testing
             p_ours=verify_dmap(D,G);
             peaksnr=psnr(D,G);
-            testCase.verifyEqual(p_ours,peaksnr,'AbsTol',tolerance);
+            testCase.verifyEqual(p_ours,peaksnr,'AbsTol',1*e-6);
         end
     end
 end
