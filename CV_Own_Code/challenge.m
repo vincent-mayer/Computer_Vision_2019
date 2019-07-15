@@ -92,14 +92,14 @@ figure
 % [D, R, T] = disparity_map(scene_path)
 
 %% Validation
-% Specify path to ground truth disparity map || No need, because ground truth are in the same folder as im0,im1 and calib
-% gt_path = scene_path + '/ground_truth.jpg';
+% Specify path to ground truth disparity map || Not really needed, because ground truth are in the same folder as im0,im1 and calib
+ gt_path = selpath; 
 %
 % Load the ground truth
-% G = scene_path + '/ground_truth.jpg';
+ G = read_pfm(gt_path+'/disp0.pfm');;
 % 
 % Estimate the quality of the calculated disparity map
-% p = validate_dmap(D, G)
+ p = validate_dmap(D, G);
 
 %% Stop timer here
 elapsed_time = toc;
