@@ -15,19 +15,6 @@ else
     path_existing = 1;
 end
 
-%     Im1 = double(I1);
-%     Im2 = double(I2);
-%     
-%     p = inputParser;
-%     addParameter(p, 'window_length', 25, @(x) isnumeric(x) && x>1 && mod(x,2)==1);
-%     addParameter(p, 'min_corr', 0.95, @(x) isnumeric(x) && x<1 && x>0);
-%     addParameter(p, 'do_plot', false, @islogical);
-% 
-%     parse(p, varargin{:});
-%     
-%     window_length = p.Results.window_length;
-%     min_corr = p.Results.min_corr;
-%     do_plot = p.Results.do_plot;
 
 %% Computer Vision Challenge 2019
 clc
