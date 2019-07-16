@@ -1,4 +1,11 @@
 function [vq] = interpolation(x,y,z,row,colum,Image,string)
+% Input: x,y coordinates, z values (lambdas), image and what type of
+% interpolation should be used
+% Output: Disparity Map
+% interpolates between robust corresponding points
+% first normalize distances between 0-255
+% find nearest point to each corner and pass corresponding value to corner
+% to obtain full picture
     z1=( z - min(min(z)) ) ./ ( max(max(z)) - min(min(z)))*255;     
     z = (-1*z1+max(z1));
     
@@ -50,13 +57,13 @@ function [vq] = interpolation(x,y,z,row,colum,Image,string)
     
     [xq,yq] = meshgrid(1:1:colum, 1:1:row);
     vq = griddata(x_new,y_new,z_new,xq,yq,string);
-    mesh(xq,yq,vq)
-    hold on
-    plot3(x_new,y_new,z_new,'o')
-    imshow(Image);
-    
-    figure 
-    imagesc(vq)
-    colormap gray 
+%     mesh(xq,yq,vq)
+%     hold on
+%     plot3(x_new,y_new,z_new,'o')
+%     imshow(Image);
+%     
+%     figure 
+%     imagesc(vq)
+%     colormap gray 
 end
 
