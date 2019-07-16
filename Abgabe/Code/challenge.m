@@ -1,6 +1,37 @@
+function [R, T, p, D]=challenge(varargin)
+
+% Input parser
+   
+p = inputParser;
+addParameter(p, 'directoryname', "start not from GUI", @(x) ischar(x));
+
+parse(p, varargin{:});
+
+selpath = p.Results.directoryname;
+
+if selpath == "start not from GUI"
+    path_existing = 0;
+else
+    path_existing = 1;
+end
+
+%     Im1 = double(I1);
+%     Im2 = double(I2);
+%     
+%     p = inputParser;
+%     addParameter(p, 'window_length', 25, @(x) isnumeric(x) && x>1 && mod(x,2)==1);
+%     addParameter(p, 'min_corr', 0.95, @(x) isnumeric(x) && x<1 && x>0);
+%     addParameter(p, 'do_plot', false, @islogical);
+% 
+%     parse(p, varargin{:});
+%     
+%     window_length = p.Results.window_length;
+%     min_corr = p.Results.min_corr;
+%     do_plot = p.Results.do_plot;
+
 %% Computer Vision Challenge 2019
 clc
-clear all
+%clear all
 close all
 
 % Group number:
@@ -18,7 +49,11 @@ tic
 %% Disparity Map
 % Specify path to scene folder containing img0 img1 and calib
 %% Bilder laden
-selpath = uigetdir(path);
+
+if path_existing == 0
+    selpath = uigetdir(path);
+end    
+    
 [K K1 Image1 Image2 baseline] = load_path(selpath);
 
 IGray1 = rgb_to_gray(Image1);

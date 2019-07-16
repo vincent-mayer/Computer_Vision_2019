@@ -1,3 +1,5 @@
+function []=challenge(varargin)
+
 %% Computer Vision Challenge 2019
 clc
 clear all
@@ -28,25 +30,6 @@ IGray2 = rgb_to_gray(Image2);
 DisMap=Disparity_blocks(IGray1, IGray2, 2, 2, 250,'true');
 %% Disparity from  features , T in m and R
 [ T , R , DisMapFeature ] = DispfromFeatures_TR(IGray1 , IGray2, K, baseline);
-
-%% Übereinander legen
-for x=1:row
-    for y=1:colum
-        m_new(x,y) = (0.5*DisMapFeature(x,y) + 0.5*DisMap(x,y)) / 2;
-    end
-end
-fi
-%% Median Filter
-N = 10;
-im_pad = padarray(m_new, [floor(N/2) floor(N/2)]);
-im_col = im2col(im_pad, [N N], 'sliding');
-sorted_cols = sort(im_col, 1, 'ascend');
-med_vector = sorted_cols(floor(N*N/2) + 1, :);
-IGray1 = col2im(med_vector, [N N], size(im_pad), 'sliding');
-%%
-figure
-    imagesc(IGray1)
-    colormap gray 
 
 % Calculate disparity map and Euclidean motion
 % [D, R, T] = disparity_map(scene_path)
