@@ -121,15 +121,11 @@ function calculate_d_map_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global directoryname;
 global DisMap;
-%addpath(directoryname);
+
+
 path_im0 = [directoryname '\im0.png'];
 path_im1 = [directoryname '\im0.png'];
 if exist(path_im0, 'file') && exist(path_im1, 'file')
-    %rmpath(directoryname);
-    
-    % Funktionsaufruf Calculate Disparity-Map
-    %[R, T, p, D] = f_d_map(im0, im1);
-    
     [R, T, p, DisMap] = challenge('directoryname', directoryname);
     
     %R_title = 'R';
@@ -174,7 +170,7 @@ else
     set(handles.output_status,'BackgroundColor', [1 0 0]);
     set(handles.output_status, 'String', 'failed');
     
-    set(handles.hint_no_directory, 'String', 'No Directory selected!', 'HorizontalAlignment', 'center');
+    set(handles.hint_no_directory, 'String', 'No Directory selected, or no Image Im0 or Im1 found!', 'HorizontalAlignment', 'center');
     set(handles.hint_no_directory,'ForegroundColor', [1 0 0]);
     set(handles.hint_no_directory,'Visible','on');
     
@@ -187,7 +183,12 @@ function search_dir_Callback(hObject, eventdata, handles)
 % hObject    handle to search_dir (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Globale Variable directoryname, in der das directory gespeichert wird
 global directoryname; 
+
+% beständige Variable first_time, ob das erste mal auf den Button gedrückt
+% wird
 persistent first_time;
 if isempty(first_time)  
     first_time = 1;
@@ -196,13 +197,19 @@ else
     first_time = 0;
 end 
 
+% wenn vom vorherigen start_gui-Durchlauf ein directory gespeichert ist,
+% lösche es
 if logical(mean(directoryname)) ~= 0 && first_time == 0
     %rmpath(directoryname);  
     directoryname = 0;
 end
 
+% öffnet Benutzeroberfläche zur Pfadauswahl und gibt Pfad als Char zurück
 directoryname = uigetdir;
 
+% Prüft, ob der Rückgabewert wie erwartet ein char ist und öffnet die
+% vorhandenen Bilder, deaktiviert Hinweise, dass kein Pfad ausgewählt ist
+% und löscht die Ergebnisse aus der vorherigen Disparity-Map-Berechnung
 if(ischar(directoryname) == 1)
     set(handles.hint_no_directory,'Visible','off');
     addpath(directoryname);
@@ -214,8 +221,18 @@ if(ischar(directoryname) == 1)
         title('Image 0');
         
         set(handles.show_Im0,'Visible','on');
+        Im0_existing = 1;
     else
-        % Ausgabe Fehlerbild
+        Im0_existing = 0;
+        % reset des Im0-Axes
+        cla (handles.output_im0,'reset');
+        axes(handles.output_im0);
+        text(0.45, 0.5, 'Im0');
+        set(gca, 'Color', [0.5 0.5 0.5]);
+        set(handles.output_im0, 'XTick', []);
+        set(handles.output_im0, 'YTick', []);
+        % Ausblenden des Push-Buttons zum Öffnen der Bilder in Figure
+        set(handles.show_Im0,'Visible','off');
     end
 
     if exist('im1.png', 'file')
@@ -226,8 +243,38 @@ if(ischar(directoryname) == 1)
         title('Image 1');
         
         set(handles.show_Im1,'Visible','on');
+        Im1_existing = 1;
     else
-        % Ausgabe Fehlerbild
+        Im1_existing = 0;
+        % reset des Im1-Axes
+        cla (handles.output_im1,'reset');
+        axes(handles.output_im1);
+        text(0.45, 0.5, 'Im1');
+        set(gca, 'Color', [0.5 0.5 0.5]);
+        set(handles.output_im1, 'XTick', []);
+        set(handles.output_im1, 'YTick', []);
+        % Ausblenden des Push-Buttons zum Öffnen der Bilder in Figure
+        set(handles.show_Im1,'Visible','off');
+    end
+    
+    % Ausgabe des Hinweises, dass eines oder mehrere Bilder nicht gefunden
+    % wurden
+    if exist('im1.png', 'file') == 0 || exist('im0.png', 'file') == 0
+        
+        if Im0_existing == 0
+            Hinweis_Bilder_nicht_vorhanden = 'Im0';
+            if Im1_existing == 0
+                Hinweis_Bilder_nicht_vorhanden = [Hinweis_Bilder_nicht_vorhanden ' and Im1 not found!'];
+            else
+                Hinweis_Bilder_nicht_vorhanden = [Hinweis_Bilder_nicht_vorhanden ' not found!'];
+            end
+        else
+            Hinweis_Bilder_nicht_vorhanden = 'Im1 not found!';
+        end
+ 
+        set(handles.hint_no_directory, 'String', Hinweis_Bilder_nicht_vorhanden, 'HorizontalAlignment', 'center');
+        set(handles.hint_no_directory,'ForegroundColor', [1 0 0]);
+        set(handles.hint_no_directory,'Visible','on');
     end
 
     if directoryname ~= 0
@@ -265,11 +312,33 @@ if(ischar(directoryname) == 1)
 
     rmpath(directoryname);
     
-else
+else    
+    % wird ausgeführt, wenn die Pfadauswahl vorzeitig abgebrochen wird
+    
+    % 1. zurücksetzen der Bildvorschauen Im0 und Im1 auf Grau
+    cla (handles.output_im0,'reset');
+    axes(handles.output_im0);
+    text(0.45, 0.5, 'Im0');
+    set(gca, 'Color', [0.5 0.5 0.5]);
+    set(handles.output_im0, 'XTick', []);
+    set(handles.output_im0, 'YTick', []);
+
+    cla (handles.output_im1,'reset');
+    axes(handles.output_im1);
+    text(0.45, 0.5, 'Im1');
+    set(gca, 'Color', [0.5 0.5 0.5]);
+    set(handles.output_im1, 'XTick', []);
+    set(handles.output_im1, 'YTick', []);
+    
+    % Anzeige current_directory = '---'
+    set(handles.current_directory, 'String', '---', 'HorizontalAlignment', 'center');
+    
+    % Einblenden des Hinweises, dass kein Directory ausgewählt wurde
     set(handles.hint_no_directory, 'String', 'No Directory selected!', 'HorizontalAlignment', 'center');
     set(handles.hint_no_directory,'ForegroundColor', [1 0 0]);
     set(handles.hint_no_directory,'Visible','on');
     
+    % Ausblenden der beiden Push-Buttons zum Öffnen der Bilder in Figure
     set(handles.show_Im0,'Visible','off');
     set(handles.show_Im1,'Visible','off');
 end
