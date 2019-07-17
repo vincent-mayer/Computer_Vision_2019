@@ -21,7 +21,7 @@ Merkmale5(:, size(Merkmale1, 2)+1:end) = Merkmale3(:, 1:end);
 Merkmale6(:, 1:size(Merkmale2,2)) = Merkmale2(:, 1:end);
 Merkmale6(:, size(Merkmale2,2)+1:end) = Merkmale4(:, 1:end);
 
-Korrespondenzen = punkt_korrespondenzen(IGray1,IGray2,Merkmale5,Merkmale6,'window_length',25,'min_corr', 0.9)
+Korrespondenzen = punkt_korrespondenzen(IGray1,IGray2,Merkmale5,Merkmale6,'window_length',25,'min_corr', 0.9);
 [Korrespondenzen_robust anzahl] = F_ransac(Korrespondenzen, 'tolerance', 0.04);
 E = achtpunktalgorithmus(Korrespondenzen_robust, K);
 [T1, R1, T2, R2] = TR_aus_E(E);

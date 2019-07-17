@@ -1,16 +1,20 @@
 function DispMap=Disparity_blocks(right, left, BlockSize, halfTemplateSize, disparityRange, do_plot)
-tic
-fprintf('Performing basic block matching...\n');
+
+fprintf('   Performing basic block matching...\n');
+
 %% Allocate Space
 DispMap = zeros(size(left), 'single');
 DispMap1 = DispMap;
 diff_Block = zeros(ceil(disparityRange/2),1);
+
 %% Get the image dimensions.
 [imgHeight, imgWidth] = size(left);
+
 %% Add zero frame depending on TemplateSize
 TemplateSize = halfTemplateSize*2 + 1; % Size in blocks
 right_frame = zeros(imgHeight+2*halfTemplateSize*BlockSize, imgWidth+2*halfTemplateSize*BlockSize);
 left_frame = right_frame;
+
 %% Coordinate Origin for picutre without frame
 frame_size_pxl = BlockSize*halfTemplateSize;
 x_no_frame = 1+frame_size_pxl;
@@ -63,12 +67,11 @@ for m = y_no_frame:BlockSize:ceil(imgHeight) % Run through half of the image row
         end 
     end
         
-      fprintf('  Image row %d / %d (%.0f%%)\n', m, imgHeight, (m / imgHeight) * 100);
+      fprintf('   Image row %d / %d (%.0f%%)\n', m, imgHeight, (m / imgHeight) * 100);
        
 end
 if do_plot
     figure
     imagesc(DispMap)
 end
-computing_time = toc
 end
