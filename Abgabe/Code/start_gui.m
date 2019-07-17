@@ -124,9 +124,10 @@ global DisMap;
 
 
 path_im0 = [directoryname '\im0.png'];
-path_im1 = [directoryname '\im0.png'];
+path_im1 = [directoryname '\im1.png'];
 if exist(path_im0, 'file') && exist(path_im1, 'file')
-    [R, T, p, DisMap] = challenge('directoryname', directoryname);
+    %[R, T, p, DisMap] = challenge('directoryname', directoryname);
+    challenge;
     
     %R_title = 'R';
     R_line1 = [num2str(R(1,1), '%.2e'), '           ', num2str(R(1,2), '%.2e'), '           ', num2str(R(1,3), '%.2e')];
@@ -170,7 +171,7 @@ else
     set(handles.output_status,'BackgroundColor', [1 0 0]);
     set(handles.output_status, 'String', 'failed');
     
-    set(handles.hint_no_directory, 'String', 'No Directory selected, or no Image Im0 or Im1 found!', 'HorizontalAlignment', 'center');
+    set(handles.hint_no_directory, 'String', 'No Directory selected, or Image Im0 or Im1 not found!', 'HorizontalAlignment', 'center');
     set(handles.hint_no_directory,'ForegroundColor', [1 0 0]);
     set(handles.hint_no_directory,'Visible','on');
     

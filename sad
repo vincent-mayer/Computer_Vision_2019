@@ -1,0 +1,142 @@
+[33mcommit a0ad74a9801eecb067368ce8a169e081f452d45a[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: AndreasGassner2 <andreas.gassner@tum.de>
+Date:   Fri Jul 12 16:38:40 2019 +0200
+
+    GUI-Daten in Merge hinzgefügt
+    
+    GUI.fig = Designoberfläche der Matlab-GUI
+    GUI.m = Matlab-Code zur GUI
+    GUI_main.m = die von der GUI aufgerufene Funktion
+
+[33mcommit f2d4d56e9087e43a32c73bd8a1708ebfaa607d1c[m
+Author: oivindbakke <oivind.bakke95@gmail.com>
+Date:   Thu Jul 11 10:41:33 2019 +0200
+
+    Test should be complete, challange is close to complete
+
+[33mcommit 16f68870eb16ba271dd8938071e2d5805e9ef103[m
+Author: Th3oD4y4n <52192684+Th3oD4y4n@users.noreply.github.com>
+Date:   Wed Jul 10 17:23:51 2019 +0200
+
+    Add files via upload
+
+[33mcommit 3e820c59c50b289b025b056da7255fb3cea95aff[m
+Author: oivindbakke <oivind.bakke95@gmail.com>
+Date:   Wed Jul 10 09:03:24 2019 +0200
+
+    Added names and Emails
+
+[33mcommit c0da84addb718f3802a2ba1d8e8475015086524e[m
+Author: vincentmaye <vincent.mayer@tum.de>
+Date:   Tue Jul 9 17:52:25 2019 +0200
+
+    Added Vincent_Blocks algorithm + Motrocycle results
+
+[33mcommit 02a1b3309097c3afdd4241ae135b02c60a4795c8[m
+Author: vincentmaye <vincent.mayer@tum.de>
+Date:   Fri Jul 5 17:30:32 2019 +0200
+
+    Deleted unnecessary stuff
+
+[33mcommit cfb263c3145609c45d8f026b6c5623aea96d4134[m
+Merge: 52e9958 aaca234
+Author: vincentmaye <vincent.mayer@tum.de>
+Date:   Fri Jul 5 15:08:16 2019 +0200
+
+    Merge branch 'master' of https://github.com/vincentmaye/Computer_Vision_2019
+    
+    These are some changes
+
+[33mcommit 52e99589c1e740a9891e0f11e690c2d75bbeb824[m
+Author: vincentmaye <vincent.mayer@tum.de>
+Date:   Fri Jul 5 15:06:25 2019 +0200
+
+    Computed two dist maps for k=2 and k=3 with block matching
+
+[33mcommit aaca234a67b23851370dd1f91eb5a3064a11a00f[m
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Fri Jul 5 13:34:22 2019 +0200
+
+    Funktion read_pfm.m angepasst. Dadurch genaueres Einlesen der Tiefenkarte möglich. JPGs der Tiefenkarten neu erstellt.
+
+[33mcommit c0dba001065a438dcfdf3a3d994ce56c8bca5ec0[m
+Merge: f2da8bb 65088a0
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Fri Jul 5 11:38:32 2019 +0200
+
+    Merge branch 'master' of github.com:vincentmaye/Computer_Vision_2019
+
+[33mcommit f2da8bbf95bdf981e35a6e480e1cdc60eea0f76f[m
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Fri Jul 5 11:38:15 2019 +0200
+
+    Funktion verify_dmap.m hinzugefügt.
+
+[33mcommit 65088a0aad48330735f7cfe401d37965a18e436d[m
+Merge: cb4e1bd eef7237
+Author: oivindbakke <oivind.bakke95@gmail.com>
+Date:   Fri Jul 5 10:59:29 2019 +0200
+
+    Merge branch 'master' of https://github.com/vincentmaye/Computer_Vision_2019
+    :# the commit.
+
+[33mcommit cb4e1bd3dca9d01207b4fda02ca83f6bac64d045[m
+Author: oivindbakke <oivind.bakke95@gmail.com>
+Date:   Fri Jul 5 10:54:10 2019 +0200
+
+    Testdatei und Check_toolboxes für unit-test. Muss am Ende angepasst
+    werden.
+
+[33mcommit eef7237bc8520c2a0239bc0d9044d9cedd543e55[m
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Fri Jul 5 10:35:38 2019 +0200
+
+    challenge.m aus Vorlage eingefügt.
+
+[33mcommit 543dfccc5f8803318a58a5c6f224d14f236c2173[m
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Thu Jul 4 17:16:37 2019 +0200
+
+    Ground Truth für jedes Bild ausgelesen und als JPG im entsprechenden Ordner abgelegt.
+
+[33mcommit 2dc9defa3a1fb44bc003d936122bf986fbaebf41[m
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Thu Jul 4 16:18:47 2019 +0200
+
+    Code so angepasst, dass Bild richtig herum gedreht wird.
+
+[33mcommit 43d24c6953af23e7ff1755d5dcfe1249e53602b5[m
+Author: oivindbakke <oivind.bakke95@gmail.com>
+Date:   Thu Jul 4 10:55:52 2019 +0200
+
+    added a test file
+
+[33mcommit 14704b7721e56560cab55d0079a36a1624359204[m
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Wed Jul 3 16:09:00 2019 +0200
+
+    Funktion read_pfm.m hinzugefügt. Mit dieser können .pfm Dateien ausgelesen werden.
+
+[33mcommit 7bf996f89cc5888c096c1322292ccfe1606cb291[m
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Wed Jul 3 12:57:01 2019 +0200
+
+    Skript.m so angepasst, das das Skript auch mit lokalem clone läuft. Laden der K-Matrix ausgelagert.
+
+[33mcommit 5c4db7cc84d7838bef2e686ada534f760b15b862[m
+Author: Robert Lefringhausen <robert.lefringhausen@t-online.de>
+Date:   Wed Jul 3 12:29:44 2019 +0200
+
+    Ransac Algorithmus angepasst.
+
+[33mcommit 441639280589b7e2e29fb746675a121ef7bda13b[m
+Author: vincentmaye <vincent.mayer@tum.de>
+Date:   Mon Jul 1 17:47:56 2019 +0200
+
+    Additional sample solutions
+
+[33mcommit f428ed7083c6c7011f69725bab5f4037f3af7724[m
+Author: vincentmaye <vincent.mayer@tum.de>
+Date:   Mon Jul 1 17:40:35 2019 +0200
+
+    First commit

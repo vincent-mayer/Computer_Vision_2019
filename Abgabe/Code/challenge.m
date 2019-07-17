@@ -1,22 +1,13 @@
-function [R, T, p, D]=challenge(varargin)
+%% Computer Vision Challenge 2019
 
-% Input parser
-   
-p = inputParser;
-addParameter(p, 'directoryname', "start not from GUI", @(x) ischar(x));
-
-parse(p, varargin{:});
-
-selpath = p.Results.directoryname;
-
-if selpath == "start not from GUI"
-    path_existing = 0;
-else
+% Existiert die Variable directoryname (GUI-Aufruf) oder nicht (ohne GUI)
+if exist('directoryname', 'var')
+    selpath = directoryname;
     path_existing = 1;
+else
+    path_existing = 0;
 end
 
-
-%% Computer Vision Challenge 2019
 clc
 %clear all
 close all
