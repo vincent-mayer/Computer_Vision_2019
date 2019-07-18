@@ -84,7 +84,7 @@ function [DispMap, DispMap1, DispMap_norm]=Disparity(left, right, BlockSize, hal
                         W = (template - mean(template,'all'))/std(template,0,'all');
                         V = (compare_Block - mean(compare_Block,'all'))/std(compare_Block,0,'all');
                         %% If compare block still too far to the left
-                        if sum(compare_Block(:,end)) == 0
+                        if sum(compare_Block(:,1)) == 0
                             diff_Block(index_diff_Block,1) = 0;
                         else
                             diff_Block(index_diff_Block,1) = 1/(N-1) * trace(W'*V);
@@ -95,18 +95,22 @@ function [DispMap, DispMap1, DispMap_norm]=Disparity(left, right, BlockSize, hal
                 %% If n bigger than imgwidth-disparity(too far to the right), make search space smaller, max disparity can only be img_width - n
                     for i = n:BlockSize:imgWidth
                         compare_Block = left_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1,i-frame_size_pxl:i+frame_size_pxl+BlockSize-1);
+                        %% Generate Matrices for W and V
+                        W = (template - mean(template,'all'))/std(template,0,'all');
+                        V = (compare_Block - mean(compare_Block,'all'))/std(compare_Block,0,'all');
+                        %% If compare block still too far to the left
                         if sum(compare_Block(:,1)) == 0
-                            diff_Block(index_diff_Block,1) = inf;
+                            diff_Block(index_diff_Block,1) = 0;
                         else
-                            diff_Block(index_diff_Block,1) = sum(sum(abs(template-compare_Block)));
+                            diff_Block(index_diff_Block,1) = 1/(N-1) * trace(W'*V);
                         end
                         index_diff_Block = index_diff_Block+1;
                     end
                 end
                 
-                [~,sortedIndexes] = sort(diff_Block);
+                [~,sortedIndexes] = sort(diff_Block,'descend');
                 bestMatchIndex = sortedIndexes(1,1);
-                d = bestMatchIndex*BlockSize -1;
+                d = (bestMatchIndex-1)*BlockSize;
                 DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=d;
                 if bestMatchIndex == 1 || bestMatchIndex+1 > size(diff_Block,1)
                     DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d;
