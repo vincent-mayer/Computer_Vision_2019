@@ -1,4 +1,5 @@
 %% Computer Vision Challenge 2019
+global group_number members mail R T elapsed_time D G p;
 
 % Group number:
 group_number = 59;
@@ -16,7 +17,7 @@ addpath(genpath(fileparts(which(mfilename))));
 tic
 
 %% Disparity Map
-% Gegebenenfalls Pfad wählen.
+% Gegebenenfalls Pfad wï¿½hlen.
 if exist('directoryname', 'var')
     selpath = directoryname;
     path_existing = 1;
@@ -30,10 +31,10 @@ end
 IGray1 = rgb_to_gray(Image1);
 IGray2 = rgb_to_gray(Image2);
 
-% Disparity Map über Block Matching Algorithmus berechnen.
+% Disparity Map ï¿½ber Block Matching Algorithmus berechnen.
 DisMap = Disparity_blocks(IGray1, IGray2, 2, 2, 250,'true');
 
-% Disparity Map über Achtpunktalgorithmus berechnen.
+% Disparity Map ï¿½ber Achtpunktalgorithmus berechnen.
 [T ,R , DisMapFeature] = DispfromFeatures_TR(IGray1 , IGray2, K, baseline);
 
 
@@ -58,8 +59,6 @@ disp('T =');
 disp(T);
 fprintf('p = %.2f dB\nElapsed time = %.2f s\n', p, elapsed_time);
 
- save('challenge.mat');
-% run(test);
 
 %% Display Disparity
 figure

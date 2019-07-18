@@ -17,8 +17,7 @@ function varargout = start_gui(varargin)
 %
 %      *See start_gui Options on GUIDE's Tools menu.  Choose "start_gui allows only one
 %      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
+%See also: GUIDE, GUIDATA, GUIHANDLES
 
 % Edit the above text to modify the response to help start_gui
 
@@ -122,10 +121,10 @@ global directoryname;
 global DisMap;
 
 
-path_im0 = [directoryname '\im0.png'];
-path_im1 = [directoryname '\im1.png'];
+path_im0 = [directoryname '/im0.png'];
+path_im1 = [directoryname '/im1.png'];
 if exist(path_im0, 'file') && exist(path_im1, 'file')
-    % Ausführung des Challenge Skripts zur Berechnung der Disparity Map
+    % Ausfï¿½hrung des Challenge Skripts zur Berechnung der Disparity Map
     challenge;
     
     % Ausgabe der Zahlenwerte in den Textboxen
@@ -196,7 +195,7 @@ function search_dir_Callback(hObject, eventdata, handles)
 % Globale Variable directoryname, in der das directory gespeichert wird
 global directoryname; 
 
-% beständige Variable first_time, ob das erste mal auf den Button gedrückt
+% bestï¿½ndige Variable first_time, ob das erste mal auf den Button gedrï¿½ckt
 % wird
 persistent first_time;
 if isempty(first_time)  
@@ -207,18 +206,18 @@ else
 end 
 
 % wenn vom vorherigen start_gui-Durchlauf ein directory gespeichert ist,
-% lösche es
+% lï¿½sche es
 if logical(mean(directoryname)) ~= 0 && first_time == 0
     %rmpath(directoryname);  
     directoryname = 0;
 end
 
-% öffnet Benutzeroberfläche zur Pfadauswahl und gibt Pfad als Char zurück
+% ï¿½ffnet Benutzeroberflï¿½che zur Pfadauswahl und gibt Pfad als Char zurï¿½ck
 directoryname = uigetdir;
 
-% Prüft, ob der Rückgabewert wie erwartet ein char ist und öffnet die
-% vorhandenen Bilder, deaktiviert Hinweise, dass kein Pfad ausgewählt ist
-% und löscht die Ergebnisse aus der vorherigen Disparity-Map-Berechnung
+% Prï¿½ft, ob der Rï¿½ckgabewert wie erwartet ein char ist und ï¿½ffnet die
+% vorhandenen Bilder, deaktiviert Hinweise, dass kein Pfad ausgewï¿½hlt ist
+% und lï¿½scht die Ergebnisse aus der vorherigen Disparity-Map-Berechnung
 if(ischar(directoryname) == 1)
     set(handles.hint_no_directory,'Visible','off');
     addpath(directoryname);
@@ -240,7 +239,7 @@ if(ischar(directoryname) == 1)
         set(gca, 'Color', [0.5 0.5 0.5]);
         set(handles.output_im0, 'XTick', []);
         set(handles.output_im0, 'YTick', []);
-        % Ausblenden des Push-Buttons zum Öffnen der Bilder in Figure
+        % Ausblenden des Push-Buttons zum ï¿½ffnen der Bilder in Figure
         set(handles.show_Im0,'Visible','off');
     end
 
@@ -262,7 +261,7 @@ if(ischar(directoryname) == 1)
         set(gca, 'Color', [0.5 0.5 0.5]);
         set(handles.output_im1, 'XTick', []);
         set(handles.output_im1, 'YTick', []);
-        % Ausblenden des Push-Buttons zum Öffnen der Bilder in Figure
+        % Ausblenden des Push-Buttons zum ï¿½ffnen der Bilder in Figure
         set(handles.show_Im1,'Visible','off');
     end
     
@@ -334,9 +333,9 @@ if(ischar(directoryname) == 1)
     rmpath(directoryname);
     
 else    
-    % wird ausgeführt, wenn die Pfadauswahl vorzeitig abgebrochen wird
+    % wird ausgefï¿½hrt, wenn die Pfadauswahl vorzeitig abgebrochen wird
     
-    % 1. zurücksetzen der Bildvorschauen Im0 und Im1 auf Grau
+    % 1. zurï¿½cksetzen der Bildvorschauen Im0 und Im1 auf Grau
     cla (handles.output_im0,'reset');
     axes(handles.output_im0);
     text(0.45, 0.5, 'Im0');
@@ -354,12 +353,12 @@ else
     % Anzeige current_directory = '---'
     set(handles.current_directory, 'String', '---', 'HorizontalAlignment', 'center');
     
-    % Einblenden des Hinweises, dass kein Directory ausgewählt wurde
+    % Einblenden des Hinweises, dass kein Directory ausgewï¿½hlt wurde
     set(handles.hint_no_directory, 'String', 'No Directory selected!', 'HorizontalAlignment', 'center');
     set(handles.hint_no_directory,'ForegroundColor', [1 0 0]);
     set(handles.hint_no_directory,'Visible','on');
     
-    % Ausblenden der beiden Push-Buttons zum Öffnen der Bilder in Figure
+    % Ausblenden der beiden Push-Buttons zum ï¿½ffnen der Bilder in Figure
     set(handles.show_Im0,'Visible','off');
     set(handles.show_Im1,'Visible','off');
 end
@@ -373,7 +372,7 @@ function show_Im0_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global directoryname;
 if(ischar(directoryname) == 1)
-    path_im0 = [directoryname '\im0.png'];
+    path_im0 = [directoryname '/im0.png'];
 
     figure(3);
     im0 = imread(path_im0, 'png');
@@ -390,13 +389,15 @@ function show_Im1_Callback(hObject, eventdata, handles)
 
 global directoryname;
 if(ischar(directoryname) == 1)
-    path_im1 = [directoryname '\im1.png'];
+    path_im1 = [directoryname '/im1.png'];
 
+    if exist(path_im1,'file')
     figure(4);
     im1 = imread(path_im1, 'png');
     image(im1); axis image;
     axis off;
     title('Image 1');
+    end
 end
 
 
@@ -425,7 +426,7 @@ global DisMap;
 global directoryname;
 
 if length(DisMap) > 1 && (ischar(directoryname) == 1)
-    path_im0 = [directoryname '\im0.png'];
+    path_im0 = [directoryname '/im0.png'];
     im0 = imread(path_im0, 'png');
     
     figure(6);

@@ -18,7 +18,8 @@ classdef test < matlab.unittest.TestCase
             testCase.verifyFalse(check_toolboxes('verify_dmap.m'));
         end
         function test_variables(testCase)%Loads the .mat file, which has been saved right before calling the test function.
-            load('challenge.mat');		 %Verify that the specified variables are not empty or that they are greater than 0
+            global group_number members mail R T elapsed_time D p;
+            %load('challenge.mat');		 %Verify that the specified variables are not empty or that they are greater than 0
             testCase.verifyNotEmpty(members); 
             testCase.verifyNotEmpty(mail);
             testCase.verifyEqual(group_number,59);
@@ -31,7 +32,8 @@ classdef test < matlab.unittest.TestCase
         %%Tests the PSNR of our function to the one of Image Processing Toolbox
         %check if the results are within a certain tolerance(10^-1). 
 		function check_psnr(testCase)
-			load ('challenge.mat');
+			global D G ;
+            %load ('challenge.mat');
             p_ours=verify_dmap(D,G);
             peaksnr=psnr(D,G);
             testCase.verifyEqual(p_ours,peaksnr,'AbsTol',10^-1); %
