@@ -23,9 +23,9 @@ classdef test < matlab.unittest.TestCase
             testCase.verifyNotEmpty(mail);
             testCase.verifyEqual(group_number,59);
             testCase.verifyGreaterThan(elapsed_time,0);
-            testCase.verifyGreaterThan(D,0);
-            testCase.verifyNotEqual(R,0);
-            testCase.verifyNotEqual(T,0);
+            testCase.verifyNotEmpty(D);
+            testCase.verifyNotEmpty(R);
+            testCase.verifyNotEmpty(T);
             testCase.verifyGreaterThan(p,0);            
 		end
         %%Tests the PSNR of our function to the one of Image Processing Toolbox
