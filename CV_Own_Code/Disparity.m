@@ -10,7 +10,7 @@
 %           disparity Range : search space to the right in number of pixels
 %           SAD : if 1, use SAD, if 0 use NCC
 
-function [DispMap, DispMap1, DispMap_norm]=Disparity(left, right, BlockSize, halfTemplateSize, disparityRange, do_plot,SAD)
+function [DispMap, DispMap1, DispMap_norm]=Disparity(left, right, BlockSize, halfTemplateSize, disparityRange, d_min, do_plot,SAD)
     %% Compute left disparity map
 
     fprintf('Disparity map calculation started\n');
@@ -111,15 +111,33 @@ function [DispMap, DispMap1, DispMap_norm]=Disparity(left, right, BlockSize, hal
                 [~,sortedIndexes] = sort(diff_Block,'descend');
                 bestMatchIndex = sortedIndexes(1,1);
                 d = (bestMatchIndex-1)*BlockSize;
-                DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=d;
+                if d > d_min
+                    DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=d;
+                else
+                    second_best_disp = sortedIndexes(sortedIndexes > d_min);
+                    DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=second_best_disp(1);
+                end
                 if bestMatchIndex == 1 || bestMatchIndex+1 > size(diff_Block,1)
                     DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d;
                 else
-                    C1 = diff_Block(bestMatchIndex - 1);
-                    C2 = diff_Block(bestMatchIndex);
-                    C3 = diff_Block(bestMatchIndex + 1);
+%                     C1 = diff_Block(bestMatchIndex - 1);
+%                     C2 = diff_Block(bestMatchIndex);
+%                     C3 = diff_Block(bestMatchIndex + 1);
+
+                    C1 = sortedIndexes(sortedIndexes<d);
+                    C3 = sortedIndexes(sortedIndexes>d);                   
+                    if size(C1,1) > 0 && size(C3,1) > 0
+                        C1 = C1(1);
+                        C2 = d;
+                        C3 = C3(1);
+                        %DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d - (0.5 * (C3 - C1) / (C1 - (2*C2) + C3));
+                        DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = (C1+C2+C3)/3;
+                    else
+                        DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d;
+                    end
                     %% Subpixel Estimation from Matlab Example
-                    DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize,n-frame_size_pxl:n-frame_size_pxl+BlockSize) = d - (0.5 * (C3 - C1) / (C1 - (2*C2) + C3));
+                    
+                    
                 end
             end
         end
