@@ -10,7 +10,7 @@ function [cam0, cam1, im0, im1, baseline] = load_path(path)
     % Robert Lefringhausen <robert.lefringhausen@tum.de>
     % Erstellt: Juli 2019
     
-    calib_str = fileread([path '\calib.txt']);
+    calib_str = fileread([path '/calib.txt']);
     pos_matstart = strfind(calib_str,'[');
     pos_matend = strfind(calib_str,']');
     
@@ -22,8 +22,8 @@ function [cam0, cam1, im0, im1, baseline] = load_path(path)
     
     baseline = str2num(calib_str((pre_baseline+5):(post_baseline-1)));
     % Bilder laden
-    im0 = imread([path '\im0.png']);
-    im1 = imread([path '\im1.png']);
+    im0 = imread([path '/im0.png']);
+    im1 = imread([path '/im1.png']);
     
     disp('   Die Dateien aus dem Ordner wurden eingelesen.');
 end
