@@ -37,7 +37,7 @@ DisMap = Disparity_blocks(IGray1, IGray2, 2, 2, 250,'true');
 [T ,R , DisMapFeature] = DispfromFeatures_TR(IGray1 , IGray2, K, baseline);
 
 
-D = IGray1;
+D = DisMap;
 
 %% Validation 
 % Ground Truth laden.
@@ -58,10 +58,8 @@ disp('T =');
 disp(T);
 fprintf('p = %.2f dB\nElapsed time = %.2f s\n', p, elapsed_time);
 
-% % Tests ausführen.
-% save('challenge.mat');
+ save('challenge.mat');
 % run(test);
-% delete('challenge.mat'); 
 
 %% Display Disparity
 figure
