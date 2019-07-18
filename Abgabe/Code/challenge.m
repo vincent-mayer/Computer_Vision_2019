@@ -37,7 +37,7 @@ DisMap = Disparity_blocks(IGray1, IGray2, 2, 2, 250,'true');
 [T ,R , DisMapFeature] = DispfromFeatures_TR(IGray1 , IGray2, K, baseline);
 
 
-D = DisMap;
+D = IGray1;
 
 %% Validation 
 % Ground Truth laden.

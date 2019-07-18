@@ -31,7 +31,7 @@ classdef test < matlab.unittest.TestCase
         %%Tests the PSNR of our function to the one of Image Processing Toolbox
         %check if the results are within a certain tolerance(10^-1). 
 		function check_psnr(testCase)
-			load ('challenge.m');
+			load ('challenge.mat');
             p_ours=verify_dmap(D,G);
             peaksnr=psnr(D,G);
             testCase.verifyEqual(p_ours,peaksnr,'AbsTol',10^-1); %
