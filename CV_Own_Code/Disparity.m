@@ -30,7 +30,8 @@ function [DispMap, DispMap1, DispMap_norm]=Disparity(left, right, BlockSize, hal
     %% Convert to double and insert original pics in the array with zero frame
     right_frame(y_no_frame:y_no_frame+imgHeight-1,x_no_frame:x_no_frame+imgWidth-1) = double(right);
     left_frame(y_no_frame:y_no_frame+imgHeight-1,x_no_frame:x_no_frame+imgWidth-1) = double(left);
-
+    %% Compute N for NCC
+    N = BlockSize*((2*halfTemplateSize+1))^2;
     for m = y_no_frame:BlockSize:ceil(y_no_frame+imgHeight-1) % Run through imgHeights/Blocksize rows
 
         for n = x_no_frame:BlockSize:x_no_frame+(imgWidth-BlockSize) % Run through imgWidth/Blocksize cols
