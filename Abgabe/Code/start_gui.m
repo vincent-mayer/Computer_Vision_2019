@@ -22,7 +22,7 @@ function varargout = start_gui(varargin)
 
 % Edit the above text to modify the response to help start_gui
 
-% Last Modified by GUIDE v2.5 16-Jul-2019 18:22:55
+% Last Modified by GUIDE v2.5 18-Jul-2019 16:26:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,6 +58,9 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 
+% Initialisierung
+
+% Init der Axes (Plots)
 axes(handles.output_im0);
 text(0.45, 0.5, 'Im0');
 set(gca, 'Color', [0.5 0.5 0.5]);
@@ -76,28 +79,24 @@ set(gca, 'Color', [0.5 0.5 0.5]);
 set(handles.output_d_map, 'XTick', []);
 set(handles.output_d_map, 'YTick', []);
 
+axes(handles.output_3d_reko);
+text(0.30, 0.5, '3D Rekonstruktion');
+set(gca, 'Color', [0.5 0.5 0.5]);
+set(handles.output_3d_reko, 'XTick', []);
+set(handles.output_3d_reko, 'YTick', []);
+
+% Init der Axes (Plots)
 set(handles.output_status, 'String', 'Status', 'HorizontalAlignment', 'center');
 set(handles.output_status,'BackgroundColor', [0.7 0.7 0.7]);
 
 set(handles.current_directory, 'String', 'no directory selected', 'HorizontalAlignment', 'center');
 set(handles.current_directory,'BackgroundColor', [0.7 0.7 0.7]);
 
-%set(handles.result_R, 'String', 'R not calculated', 'HorizontalAlignment', 'center');
 set(handles.result_R,'BackgroundColor', [0.7 0.7 0.7]);
 
-%set(handles.result_T, 'String', 'T not calculated', 'HorizontalAlignment', 'center');
 set(handles.result_T,'BackgroundColor', [0.7 0.7 0.7]);
 
-%set(handles.result_p, 'String', 'p not calculated', 'HorizontalAlignment', 'center');
 set(handles.result_p,'BackgroundColor', [0.7 0.7 0.7]);
-
-
-% axes(handles.output_status_axes);
-% text(0.15, 0.5, 'Status');
-% set(gca, 'Color', [0.5 0.5 0.5]);
-% set(handles.output_status_axes, 'XTick', []);
-% set(handles.output_status_axes, 'YTick', []);
-
 
 % UIWAIT makes start_gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -126,10 +125,10 @@ global DisMap;
 path_im0 = [directoryname '\im0.png'];
 path_im1 = [directoryname '\im1.png'];
 if exist(path_im0, 'file') && exist(path_im1, 'file')
-    %[R, T, p, DisMap] = challenge('directoryname', directoryname);
+    % Ausführung des Challenge Skripts zur Berechnung der Disparity Map
     challenge;
     
-    %R_title = 'R';
+    % Ausgabe der Zahlenwerte in den Textboxen
     R_line1 = [num2str(R(1,1), '%.2e'), '           ', num2str(R(1,2), '%.2e'), '           ', num2str(R(1,3), '%.2e')];
     R_line2 = [num2str(R(2,1), '%.2e'), '           ', num2str(R(2,2), '%.2e'), '           ', num2str(R(2,3), '%.2e')];
     R_line3 = [num2str(R(3,1), '%.2e'), '           ', num2str(R(3,2), '%.2e'), '           ', num2str(R(3,3), '%.2e')];
@@ -155,15 +154,24 @@ if exist(path_im0, 'file') && exist(path_im1, 'file')
     set(handles.p_line1, 'String', num2str(p, '%.2e'), 'HorizontalAlignment', 'center');
     set(handles.p_line1,'Visible','on');
     
+    % Plot der Disparity Map und der 3D Rekonstruktion
     axes(handles.output_d_map);
     imagesc(DisMap); axis image;
-    %colormap gray;
-    %im1 = imread('im1.png', 'png');
-    %image(im1); axis image;
     axis off;
     title('Disparity Map');
     set(handles.show_D_Map,'Visible','on');
     
+    axes(handles.output_3d_reko);
+    im0 = imread(path_im0, 'png');
+    warp(DisMap, im0);
+    campos([0.6*size(DisMap,1) 0.55*size(DisMap,2) 2500]);
+    camup([0 0 1]);
+    axis image;
+    axis off;
+    title('3D Rekonstruktion');
+    set(handles.show_3d_reko,'Visible','on');
+    
+    % Ausgabe Status Successfull
     set(handles.output_status,'BackgroundColor', [0 1 0]);
     set(handles.output_status, 'String', 'succesfull');
     
@@ -284,14 +292,26 @@ if(ischar(directoryname) == 1)
        set(handles.current_directory, 'String', 'no directory selected');
     end
 
-    % Reset der vorangegagenen Ergebnisse der D-Map-Berechnung
+    % Reset der vorangegagenen Ergebnisse der D-Map-Berechnung und
+    % 3D-Rekonstruktion
     cla (handles.output_d_map,'reset');
     axes(handles.output_d_map);
     text(0.35, 0.5, 'Disparity Map');
     set(gca, 'Color', [0.5 0.5 0.5]);
     set(handles.output_d_map, 'XTick', []);
     set(handles.output_d_map, 'YTick', []);
-
+    
+    cla (handles.output_3d_reko,'reset');
+    axes(handles.output_3d_reko);
+    text(0.30, 0.5, '3D Rekonstruktion');
+    set(gca, 'Color', [0.5 0.5 0.5]);
+    set(handles.output_3d_reko, 'XTick', []);
+    set(handles.output_3d_reko, 'YTick', []);
+    
+    set(handles.show_D_Map,'Visible','off');
+    set(handles.show_3d_reko,'Visible','off');
+    
+    % Textausgaben
     set(handles.output_status, 'String', 'Status', 'HorizontalAlignment', 'center');
     set(handles.output_status,'BackgroundColor', [0.7 0.7 0.7]);
 
@@ -392,4 +412,34 @@ if length(DisMap) > 1
     imagesc(DisMap); axis image;
     axis off;
     title('Disparity Map');
+end
+
+
+% --- Executes on button press in show_3d_reko.
+function show_3d_reko_Callback(hObject, eventdata, handles)
+% hObject    handle to show_3d_reko (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global DisMap;
+global directoryname;
+
+if length(DisMap) > 1 && (ischar(directoryname) == 1)
+    path_im0 = [directoryname '\im0.png'];
+    im0 = imread(path_im0, 'png');
+    
+    figure(6);
+    warp(DisMap, im0);
+    campos([0.6*size(DisMap,1) 0.55*size(DisMap,2) 2500]);
+    camup([0 0 1]);
+end
+
+% --- Executes on button press in check_results.
+function check_results_Callback(hObject, eventdata, handles)
+% hObject    handle to check_results (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if exist('challenge.mat', 'file')
+   run(test)
 end
