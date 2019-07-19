@@ -16,8 +16,10 @@ function p = verify_dmap(D, G)
     interval = [0 255];
     D = double(D);
     G = double(G);
-    if (min(G,[],'all')<interval(1) || max(G,[],'all')>interval(2))
+    if (min(D,[],'all')<interval(1) || max(D,[],'all')>interval(2))
         D = (interval(2)-interval(1))/(max(D,[],'all')-min(D,[],'all'))*(D-min(D,[],'all'))+interval(1);
+    end
+    if (min(G,[],'all')<interval(1) || max(G,[],'all')>interval(2))
         G = ((interval(2)-interval(1))/(max(G,[],'all')-min(G,[],'all')))*(G-min(G,[],'all'))+interval(1);
     end
      
