@@ -120,9 +120,13 @@ function calculate_d_map_Callback(hObject, eventdata, handles)
 global directoryname;
 global DisMap;
 
-
-path_im0 = [directoryname '/im0.png'];
-path_im1 = [directoryname '/im1.png'];
+if contains(directoryname,'/')
+    path_im0 = [directoryname '/im0.png'];
+    path_im1 = [directoryname '/im1.png'];
+else
+    path_im0 = [directoryname '\im0.png'];
+    path_im1 = [directoryname '\im1.png'];
+end
 if exist(path_im0, 'file') && exist(path_im1, 'file')
     % Ausf�hrung des Challenge Skripts zur Berechnung der Disparity Map
     challenge;
@@ -372,7 +376,11 @@ function show_Im0_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global directoryname;
 if(ischar(directoryname) == 1)
-    path_im0 = [directoryname '/im0.png'];
+    if contains(directoryname,'/')
+        path_im0 = [directoryname '/im0.png'];
+    else 
+        path_im0 = [directoryname '\im0.png'];
+    end
 
     figure(3);
     im0 = imread(path_im0, 'png');
@@ -389,8 +397,11 @@ function show_Im1_Callback(hObject, eventdata, handles)
 
 global directoryname;
 if(ischar(directoryname) == 1)
-    path_im1 = [directoryname '/im1.png'];
-
+    if contains(directoryname,'/')
+        path_im1 = [directoryname '/im1.png'];
+    else
+        path_im1 = [directoryname '\im1.png'];
+    end
     if exist(path_im1,'file')
     figure(4);
     im1 = imread(path_im1, 'png');
@@ -426,7 +437,11 @@ global DisMap;
 global directoryname;
 
 if length(DisMap) > 1 && (ischar(directoryname) == 1)
-    path_im0 = [directoryname '/im0.png'];
+    if contains(directoryname,'/')
+        path_im0 = [directoryname '/im0.png'];
+    else
+        path_im0 = [directoryname '\im0.png'];
+    end
     im0 = imread(path_im0, 'png');
     
     figure(6);
