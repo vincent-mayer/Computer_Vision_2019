@@ -27,7 +27,7 @@ else
 end   
 
 
-[T ,R, D] = disparity_map(selpath);
+[R ,T, D] = disparity_map(selpath);
 
 %% Validation 
 % Ground Truth laden.
@@ -47,5 +47,10 @@ disp(R);
 disp('T =');
 disp(T);
 fprintf('p = %.2f dB\nElapsed time = %.2f s\n', p, elapsed_time);
+%% Print Disparity map
+if parse_existing==0
+    figure
+    imagesc(D);
+end
 
 

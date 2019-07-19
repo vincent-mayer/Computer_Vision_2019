@@ -161,15 +161,15 @@ if exist(path_im0, 'file') && exist(path_im1, 'file')
     
     % Plot der Disparity Map und der 3D Rekonstruktion
     axes(handles.output_d_map);
-    imagesc(DisMap); axis image;
+    imagesc(D); axis image;
     axis off;
     title('Disparity Map');
     set(handles.show_D_Map,'Visible','on');
     
     axes(handles.output_3d_reko);
     im0 = imread(path_im0, 'png');
-    warp(DisMap, im0);
-    campos([0.6*size(DisMap,1) 0.55*size(DisMap,2) 2500]);
+    warp(D, im0);
+    campos([0.6*size(D,1) 0.55*size(D,2) 2500]);
     camup([0 0 1]);
     axis image;
     axis off;
@@ -420,10 +420,10 @@ function show_D_Map_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-global DisMap;
-if length(DisMap) > 1
+global D;
+if length(D) > 1
     figure(5);
-    imagesc(DisMap); axis image;
+    imagesc(D); axis image;
     axis off;
     title('Disparity Map');
 end
@@ -435,10 +435,10 @@ function show_3d_reko_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-global DisMap;
+global D;
 global directoryname;
 
-if length(DisMap) > 1 && (ischar(directoryname) == 1)
+if length(D) > 1 && (ischar(directoryname) == 1)
     if contains(directoryname,'/')
         path_im0 = [directoryname '/im0.png'];
     else
@@ -447,8 +447,8 @@ if length(DisMap) > 1 && (ischar(directoryname) == 1)
     im0 = imread(path_im0, 'png');
     
     figure(6);
-    warp(DisMap, im0);
-    campos([0.6*size(DisMap,1) 0.55*size(DisMap,2) 2500]);
+    warp(D, im0);
+    campos([0.6*size(D,1) 0.55*size(D,2) 2500]);
     camup([0 0 1]);
 end
 
