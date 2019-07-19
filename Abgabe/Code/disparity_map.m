@@ -14,9 +14,16 @@
 %           SAD : if 1, use SAD, if 0 use NCC
 
 function [DispMap, R, T, DispMap1, DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD)
-    %% Search features       
+    %% Search features
+    row = size(left,1);
+    colum =  size(right,2);
+    
+    left=imresize(left,[row/4,colum/4]);
+    right=imresize(right,[row/4,colum/4]);
+    
     Merkmale1 = harris_detektor(left,'segment_length',3,'k',0.04,'min_dist',4,'N',100,'do_plot',false);
     Merkmale2 = harris_detektor(right,'segment_length',3,'k',0.04,'min_dist',4,'N',100,'do_plot',false);
+
     %% Search Corresponding pairs
     Korrespondenzen = punkt_korrespondenzen(left,right,Merkmale1,Merkmale2,'window_length',25,'min_corr', 0.9);
     [Korrespondenzen_robust anzahl] = F_ransac(Korrespondenzen, 'tolerance', 0.04);
@@ -170,9 +177,10 @@ function [DispMap, R, T, DispMap1, DispMap_norm]=Disparity(left, right, K,BlockS
           fprintf('  Image row %d / %d (%.0f%%)\n', m-y_no_frame, imgHeight, ((m-y_no_frame) / imgHeight) * 100);
 
     end
-    DispMap_norm = normalize_var(DispMap,0,255);
-    DispMap_norm = uint8(DispMap_norm);
+        DispMap_norm = normalize_var(DispMap,0,255);
+        DispMap_norm = uint8(DispMap_norm);
     if median_filter_on
+        DispMap_norm = normalize_var(DispMap,0,255);
         N = 20;
         im_pad = padarray(DispMap_norm, [floor(N/2) floor(N/2)]);
         im_col = im2col(im_pad, [N N], 'sliding');
