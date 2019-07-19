@@ -32,8 +32,8 @@ function [cam0, cam1, im0, im1, baseline,v_min,v_max] = load_path(path)
         
     % Bilder laden
     
-    im0 = fileread([path filesep 'im0.png']);
-    im1 = fileread([path filesep 'im1.png']);
+    im0 = imread([path filesep 'im0.png']);
+    im1 = imread([path filesep 'im1.png']);
     
     disp('   Die Dateien aus dem Ordner wurden eingelesen.');
 end
