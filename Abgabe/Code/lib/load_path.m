@@ -9,11 +9,8 @@ function [cam0, cam1, im0, im1, baseline,v_min,v_max] = load_path(path)
     %
     % Robert Lefringhausen <robert.lefringhausen@tum.de>
     % Erstellt: Juli 2019
-    if contains(path,'/')
-        calib_str = fileread([path '/calib.txt']);
-    else
-        calib_str = fileread([path '\calib.txt']);
-    end
+
+    calib_str = fileread([path filesep 'calib.txt']);
 
     pos_matstart = strfind(calib_str,'[');
     pos_matend = strfind(calib_str,']');
@@ -34,13 +31,9 @@ function [cam0, cam1, im0, im1, baseline,v_min,v_max] = load_path(path)
     v_max = str2num(calib_str((pre_vmax+5):(post_vmax-1)));
         
     % Bilder laden
-if contains(path,'/')
-    im0 = imread([path '/im0.png']);
-    im1 = imread([path '/im1.png']);
-else
-    im0 = imread([path '\im0.png']);
-    im1 = imread([path '\im1.png']);
-end
+    
+    im0 = fileread([path filesep 'im0.png']);
+    im1 = fileread([path filesep 'im1.png']);
     
     disp('   Die Dateien aus dem Ordner wurden eingelesen.');
 end

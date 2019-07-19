@@ -1,191 +1,31 @@
-%% Function that returns disparity Disparity Maps
-% Output :  DispMap (Disparity without sub pixel estimation)
-%           Rotation matrix
-%           Translation vector in meter
-%           DispMap1 (Disparity with sub pixel estimation)
-%           DispMap_norm ( Disparity normalized to 0-255).
-% Input:    left : left image
-%           right : right image
-%           BlockSize : Size of the blocks image is partitioned in
-%           halfTemplateSize : 2*halfTemplateSize+1 is the number of blocks
-%           in the template used for matching
-%           K : K-Matrix from calib.txt
-%           baseline: distance from cameras from calib.txt
-%           SAD : if 1, use SAD, if 0 use NCC
+function [T ,R, D] = disparity_map(selpath)
+% Bilder laden und in Grauwertbild konvertieren.
+[K, K1, Image1, Image2, baseline, v_min, v_max] = load_path(selpath);
 
-function [R, T,DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD, d_min, disparityRange)
-    %% Search features
-    Merkmale1 = harris_detektor(left,'segment_length',3,'k',0.04,'min_dist',4,'N',50,'do_plot',false);
-    Merkmale2 = harris_detektor(right,'segment_length',3,'k',0.04,'min_dist',4,'N',50,'do_plot',false);
+IGray1 = rgb_to_gray(Image1);
+IGray2 = rgb_to_gray(Image2);
 
-    %% Search Corresponding pairs
-    Korrespondenzen = punkt_korrespondenzen(left,right,Merkmale1,Merkmale2,'window_length',25,'min_corr', 0.9);
-    [Korrespondenzen_robust anzahl] = F_ransac(Korrespondenzen, 'tolerance', 0.04);
-    %% Calculate T and R
-    E = achtpunktalgorithmus(Korrespondenzen_robust, K);
-    [T1, R1, T2, R2] = TR_aus_E(E);
-    [T, R, lambda, P1] = rekonstruktion(T1, T2, R1, R2, Korrespondenzen_robust, K);
-    %% Normalize T to baseline
-    T = (T - min(min(T)) ./ ( max(max(T)) - min(min(T)))*(baseline*10^-3));     
-    %% Find min and max disparity range
-    if ~exist(d_min) || ~exist(disparityRange)
-        Matrix(1,:) = Korrespondenzen_robust(1,:);
-        Matrix(2,:) = Korrespondenzen_robust(2,:);
-        Matrix1(1,:) = Korrespondenzen_robust(3,:);
-        Matrix1(2,:) = Korrespondenzen_robust(4,:);
-        dist = (Matrix-Matrix1).^2;
-        dist = sqrt(dist(1,:) + dist(2,:));
-        dist = sort(dist);
-    
-        d_min = min(dist);
-%         disparityRange = (dist(end)+dist(end-1)+dist(end-2)+dist(end-3))/4;
-        disparityRange = dist(end);
-    end
-        
-    
-    %% Compute left disparity map
-    fprintf('Disparity map calculation started\n');
-    %% Allocate Space
-    DispMap = zeros(size(left), 'single');
-    DispMap1 = DispMap;
-    diff_Block = zeros(ceil(disparityRange/BlockSize),1);
-    %% Get the image dimensions.
-    [imgHeight, imgWidth] = size(left);
-    %% Add zero frame depending on TemplateSize
-    right_frame = zeros(imgHeight+2*halfTemplateSize*BlockSize, imgWidth+2*halfTemplateSize*BlockSize);
-    left_frame = right_frame;
-    %% Coordinate Origin for picutre without frame
-    frame_size_pxl = BlockSize*halfTemplateSize;
-    x_no_frame = 1+frame_size_pxl;
-    y_no_frame = 1+frame_size_pxl;
-    %% Convert to double and insert original pics in the array with zero frame
-    right_frame(y_no_frame:y_no_frame+imgHeight-1,x_no_frame:x_no_frame+imgWidth-1) = double(right);
-    left_frame(y_no_frame:y_no_frame+imgHeight-1,x_no_frame:x_no_frame+imgWidth-1) = double(left);
-    %% Compute N for NCC
-    N = BlockSize*((2*halfTemplateSize+1))^2;
-    for m = y_no_frame:BlockSize:ceil(y_no_frame+imgHeight-BlockSize+1) % Run through imgHeights/Blocksize rows
+% Bild Größe bestimmen
+[img_height img_width] = size(IGray1);
 
-        for n = x_no_frame:BlockSize:x_no_frame+(imgWidth-BlockSize) % Run through imgWidth/Blocksize cols
-            template = right_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1, n-frame_size_pxl:n+frame_size_pxl+BlockSize-1);
-            index_diff_Block = 1;
-            %% If SAD selected
-            if SAD
-                %% If not too far to the right
-                if n < imgWidth-disparityRange
-                    for i = n:2:n+disparityRange
-                        compare_Block = left_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1,i-frame_size_pxl:i+frame_size_pxl+BlockSize-1);
-                        if sum(compare_Block(:,1)) == 0
-                            diff_Block(index_diff_Block,1) = inf;
-                        else
-                            diff_Block(index_diff_Block,1) = sum(sum(abs(template-compare_Block)));
-                        end
-                        index_diff_Block = index_diff_Block+1;
-                    end
-                else
-                %% If too far to the right, make search space smaller
-                    for i = n:2:imgWidth
-                        compare_Block = left_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1,i-frame_size_pxl:i+frame_size_pxl+BlockSize-1);
-                        if sum(compare_Block(:,1)) == 0
-                            diff_Block(index_diff_Block,1) = inf;
-                        else
-                            diff_Block(index_diff_Block,1) = sum(sum(abs(template-compare_Block)));
-                        end
-                        index_diff_Block = index_diff_Block+1;
-                    end
-                end
-                [~,sortedIndexes] = sort(diff_Block);
-                bestMatchIndex = sortedIndexes(1,1);
-                d = bestMatchIndex*BlockSize -1;
-                DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=d;
-                if bestMatchIndex == 1 || bestMatchIndex+1 > size(diff_Block,1)
-                    DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d;
-                else
-                    C1 = diff_Block(bestMatchIndex - 1);
-                    C2 = diff_Block(bestMatchIndex);
-                    C3 = diff_Block(bestMatchIndex + 1);
-                    %% Subpixel Estimation from Matlab Example
-                    DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize,n-frame_size_pxl:n-frame_size_pxl+BlockSize) = d - (0.5 * (C3 - C1) / (C1 - (2*C2) + C3));
-                end 
-            %% If NCC selected
-            else
-                 if n < imgWidth-disparityRange
-                    for i = n:BlockSize:n+disparityRange
-                        compare_Block = left_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1,i-frame_size_pxl:i+frame_size_pxl+BlockSize-1);
-                        %% Generate Matrices for W and V
-                        W = (template - mean(template,'all'))/std(template,0,'all');
-                        V = (compare_Block - mean(compare_Block,'all'))/std(compare_Block,0,'all');
-                        %% If compare block still too far to the left
-                        if sum(compare_Block(:,1)) == 0
-                            diff_Block(index_diff_Block,1) = 0;
-                        else
-                            diff_Block(index_diff_Block,1) = 1/(N-1) * trace(W'*V);
-                        end
-                        index_diff_Block = index_diff_Block+1;
-                    end
-                else
-                %% If n bigger than imgwidth-disparity(too far to the right), make search space smaller, max disparity can only be img_width - n
-                    for i = n:BlockSize:imgWidth
-                        compare_Block = left_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1,i-frame_size_pxl:i+frame_size_pxl+BlockSize-1);
-                        %% Generate Matrices for W and V
-                        W = (template - mean(template,'all'))/std(template,0,'all');
-                        V = (compare_Block - mean(compare_Block,'all'))/std(compare_Block,0,'all');
-                        %% If compare block still too far to the left
-                        if sum(compare_Block(:,1)) == 0
-                            diff_Block(index_diff_Block,1) = 0;
-                        else
-                            diff_Block(index_diff_Block,1) = 1/(N-1) * trace(W'*V);
-                        end
-                        index_diff_Block = index_diff_Block+1;
-                    end
-                end
-                
-                [~,sortedIndexes] = sort(diff_Block,'descend');
-                bestMatchIndex = sortedIndexes(1,1);
-                d = (bestMatchIndex-1)*BlockSize;
-                if d >= d_min
-                    DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=d;
-                else
-                    second_best_disp = sortedIndexes(sortedIndexes >= d_min);
-                    DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=second_best_disp(1);
-                end
-                if bestMatchIndex == 1 || bestMatchIndex+1 > size(diff_Block,1)
-                    DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d;
-                else
-                    
-%                     C1 = diff_Block(bestMatchIndex - 1);
-%                     C2 = diff_Block(bestMatchIndex);
-%                     C3 = diff_Block(bestMatchIndex + 1);
-
-                    C1 = sortedIndexes(sortedIndexes<d);
-                    C3 = sortedIndexes(sortedIndexes>d);                   
-                    if size(C1,1) > 0 && size(C3,1) > 0
-                        C1 = C1(1);
-                        C2 = d;
-                        C3 = C3(1);
-                        %DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d - (0.5 * (C3 - C1) / (C1 - (2*C2) + C3));
-                        DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = (C1+C2+C3)/3;
-                    else
-                        DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d;
-                    end
-                    %% Subpixel Estimation from Matlab Example
-                    
-                    
-                end
-            end
-        end
-
-          fprintf('  Image row %d / %d (%.0f%%)\n', m-y_no_frame, imgHeight, ((m-y_no_frame) / imgHeight) * 100);
-
-    end
-        DispMap_norm = normalize_var(DispMap,0,255);
-    if median_filter_on
-        DispMap_norm = normalize_var(DispMap,0,255);
-        N = 20;
-        im_pad = padarray(DispMap_norm, [floor(N/2) floor(N/2)]);
-        im_col = im2col(im_pad, [N N], 'sliding');
-        sorted_cols = sort(im_col, 1, 'ascend');
-        med_vector = sorted_cols(floor(N*N/2) + 1, :);
-        DispMap_norm = col2im(med_vector, [N N], size(im_pad), 'sliding');
-    end
-        DispMap_norm = uint8(DispMap_norm);
+%Parameter für Algo bestimmen
+if img_height>1000
+    BlockSize = 2;
+    Template=6;
+else
+    BlockSize = 1;
+    Template=4;
 end
+if ~exist('NCC_on', 'var')
+    NCC_on = 1;
+end
+if ~exist('median_filter_on', 'var')
+    median_filter_on = 0;
+end
+
+% Disparity Map ï¿½ber Block Matching Algorithmus berechnen.
+
+[T ,R, D] = main(IGray1 , IGray2, K, BlockSize, Template, baseline, median_filter_on, ~NCC_on, v_min, v_max);
+
+end
+
