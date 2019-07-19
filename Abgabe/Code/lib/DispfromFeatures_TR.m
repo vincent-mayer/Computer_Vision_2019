@@ -1,4 +1,4 @@
-function [T,R,DispMapFeature] = DispfromFeatures_TR(IGray1,IGray2, K, baseline)
+function [T,R,DispRangeMax, DispRangeMin] = DispfromFeatures_TR(IGray1,IGray2, K, baseline)
 % Calculate T ,R and Disparity Map from features
 %   Input Parameters: left, right picture from one scene, K matrix, baseline.
 %   Output Parameters: Disparity Map from features, T (normalized to
@@ -21,7 +21,17 @@ E = achtpunktalgorithmus(Korrespondenzen_robust, K);
 
 T = (T - min(min(T)) ./ ( max(max(T)) - min(min(T)))*(baseline*10^-3));     
 
-lambda = lambda(:,1);
+% Berechne die minimale und maximale Disparity Range anhand der Entfernung
+% der jeweiligen Korrespondenzpunkpaaren
+    Matrix(1,:) = Korrespondenzen_robust(1,:);
+    Matrix(2,:) = Korrespondenzen_robust(2,:);
+    Matrix1(1,:) = Korrespondenzen_robust(3,:);
+    Matrix1(2,:) = Korrespondenzen_robust(4,:);
+    dist = (Matrix-Matrix1).^2;
+    dist = sqrt(dist(1,:) + dist(2,:));
+    DispRangeMin = min(dist);
+    DispRangeMax = max(dist);
+%lambda = lambda(:,1);
 
 %DispMapFeature = interpolation(Korrespondenzen_robust(1,:),Korrespondenzen_robust(2,:), lambda, row, colum, IGray1,'natural');
 %DispMapFeature(isnan(DispMapFeature))=0;
