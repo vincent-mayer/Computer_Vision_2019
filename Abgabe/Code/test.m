@@ -34,8 +34,8 @@ classdef test < matlab.unittest.TestCase
 		function check_psnr(testCase)
 			global D G ;
             %load ('challenge.mat');
-            p_ours=verify_dmap(D,single(G));
-            peaksnr=psnr(D,single(G),255);
+            p_ours=verify_dmap(double(D),double(G));
+            peaksnr=psnr(double(D),double(G),255);
             testCase.verifyEqual(p_ours,peaksnr,'AbsTol',10^-1); %
         end
     end
