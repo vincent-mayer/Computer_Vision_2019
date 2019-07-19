@@ -103,7 +103,7 @@ function [Korrespondenzen_robust , largest_set_size] = F_ransac(Korrespondenzen,
             set(gui_waitbar_perc_handle, 'String', [num2str(progress*100,'%.1f') ' %']);
             drawnow;
         else
-            waitbar(progess, dis_waitbar);
+            waitbar(progress, dis_waitbar);
         end
     end 
     
