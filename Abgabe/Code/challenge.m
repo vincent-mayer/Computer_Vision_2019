@@ -31,11 +31,12 @@ end
 IGray1 = rgb_to_gray(Image1);
 IGray2 = rgb_to_gray(Image2);
 
-% Disparity Map �ber Block Matching Algorithmus berechnen.
-DisMap = disparity_map(IGray1, IGray2, 2, 2, round(baseline),round(baseline)/2,0,0);
-
 % Disparity Map �ber Achtpunktalgorithmus berechnen.
-[T ,R , DisMapFeature] = DispfromFeatures_TR(IGray1 , IGray2, K, baseline);
+[T ,R, DispRangeMax, DispRangeMin] = DispfromFeatures_TR(IGray1 , IGray2, K, baseline);
+
+% Disparity Map �ber Block Matching Algorithmus berechnen.
+DisMap = disparity_map(IGray1, IGray2, 2, 2, DispRangeMax ,DispRangeMin ,0,0);
+
 
 
 D = IGray1;
