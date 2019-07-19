@@ -486,8 +486,8 @@ function check_results_Callback(hObject, eventdata, handles)
 % hObject    handle to check_results (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-if exist('challenge.mat', 'file')
+global D;
+if exist('D', 'var')
    run(test)
 end
 
