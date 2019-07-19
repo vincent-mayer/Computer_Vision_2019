@@ -203,8 +203,14 @@ function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, ba
     end
         DispMap_norm = normalize_var(DispMap,0,255);
     if median_filter_on
-
-        
+        if size(DispMap,1) > 1000
+            N=20;
+            M=30;
+        else 
+            N=6;
+            M=12;
+        end      
+        med_filter(DispMap_norm, N,M);  
     end
         DispMap_norm = uint8(DispMap_norm);
         
