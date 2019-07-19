@@ -21,7 +21,7 @@ function varargout = start_gui(varargin)
 
 % Edit the above text to modify the response to help start_gui
 
-% Last Modified by GUIDE v2.5 18-Jul-2019 16:26:53
+% Last Modified by GUIDE v2.5 19-Jul-2019 10:57:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -119,6 +119,8 @@ function calculate_d_map_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global directoryname;
 global DisMap;
+global NCC_on;
+global median_filter_on;
 
 if contains(directoryname,'/')
     path_im0 = [directoryname '/im0.png'];
@@ -459,3 +461,25 @@ function check_results_Callback(hObject, eventdata, handles)
 if exist('challenge.mat', 'file')
    run(test)
 end
+
+
+% --- Executes on button press in NCC_on.
+function NCC_on_Callback(hObject, eventdata, handles)
+% hObject    handle to NCC_on (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of NCC_on
+global NCC_on;
+NCC_on = get(hObject,'Value');
+
+
+% --- Executes on button press in median_filter_on.
+function median_filter_on_Callback(hObject, eventdata, handles)
+% hObject    handle to median_filter_on (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of median_filter_on
+global median_filter_on;
+median_filter_on == get(hObject,'Value');

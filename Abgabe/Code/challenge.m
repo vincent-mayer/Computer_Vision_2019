@@ -25,18 +25,20 @@ else
     selpath = uigetdir(path);
     path_existing = 0;
 end   
-
+if ~exist('NCC_on', 'var')
+    NCC_on = 1;
+end
+if ~exist('median_filter_on', 'var')
+    median_filter_on = 0;
+end
+    
 % Bilder laden und in Grauwertbild konvertieren.
 [K K1 Image1 Image2 baseline] = load_path(selpath);
 IGray1 = rgb_to_gray(Image1);
 IGray2 = rgb_to_gray(Image2);
 
-% Disparity Map �ber Achtpunktalgorithmus berechnen.
-[T ,R, DispRangeMax, DispRangeMin] = DispfromFeatures_TR(IGray1 , IGray2, K, baseline);
-
 % Disparity Map �ber Block Matching Algorithmus berechnen.
-DisMap = disparity_map(IGray1, IGray2, 2, 2, DispRangeMax ,DispRangeMin ,0,0);
-
+[T ,R, DispRangeMax, DispRangeMin] = disparity_map(IGray1 , IGray2, K, 3, 2, baseline, median_filter_on, ~NCC_on);
 
 
 D = IGray1;
@@ -63,5 +65,5 @@ fprintf('p = %.2f dB\nElapsed time = %.2f s\n', p, elapsed_time);
 
 %% Display Disparity
 figure
-imagesc(D)
+imagesc(D);
 

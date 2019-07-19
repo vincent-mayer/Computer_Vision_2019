@@ -1,5 +1,7 @@
-	%% Function that returns disparity Disparity Maps
+%% Function that returns disparity Disparity Maps
 % Output :  DispMap (Disparity without sub pixel estimation)
+%           Rotation matrix
+%           Translation vector in meter
 %           DispMap1 (Disparity with sub pixel estimation)
 %           DispMap_norm ( Disparity normalized to 0-255).
 % Input:    left : left image
@@ -7,12 +9,35 @@
 %           BlockSize : Size of the blocks image is partitioned in
 %           halfTemplateSize : 2*halfTemplateSize+1 is the number of blocks
 %           in the template used for matching
-%           disparity Range : search space to the right in number of pixels
+%           K : K-Matrix from calib.txt
+%           baseline: distance from cameras from calib.txt
 %           SAD : if 1, use SAD, if 0 use NCC
 
-function [DispMap, DispMap1, DispMap_norm]=disparity_map(left, right, BlockSize, halfTemplateSize, disparityRange, d_min, do_plot,SAD)
-    %% Compute left disparity map
+function [DispMap, R, T, DispMap1, DispMap_norm]=Disparity(left, right, BlockSize, halfTemplateSize, K, baseline, median_filter_on,SAD)
+    %% Search features
+    Merkmale1 = harris_detektor(IGray1,'segment_length',3,'k',0.04,'min_dist',4,'N',40,'do_plot',false);
+    Merkmale2 = harris_detektor(IGray2,'segment_length',3,'k',0.04,'min_dist',4,'N',40,'do_plot',false);
 
+    %% Search Corresponding pairs
+    Korrespondenzen = punkt_korrespondenzen(IGray1,IGray2,Merkmale1,Merkmale2,'window_length',25,'min_corr', 0.9);
+    [Korrespondenzen_robust anzahl] = F_ransac(Korrespondenzen, 'tolerance', 0.04);
+    %% Calculate T and R
+    E = achtpunktalgorithmus(Korrespondenzen_robust, K);
+    [T1, R1, T2, R2] = TR_aus_E(E);
+    [T, R, lambda, P1] = rekonstruktion(T1, T2, R1, R2, Korrespondenzen_robust, K);
+    %% Normalize T to baseline
+    T = (T - min(min(T)) ./ ( max(max(T)) - min(min(T)))*(baseline*10^-3));     
+    %% Find min and max disparity range
+    Matrix(1,:) = Korrespondenzen_robust(1,:);
+    Matrix(2,:) = Korrespondenzen_robust(2,:);
+    Matrix1(1,:) = Korrespondenzen_robust(3,:);
+    Matrix1(2,:) = Korrespondenzen_robust(4,:);
+    dist = (Matrix-Matrix1).^2;
+    dist = sqrt(dist(1,:) + dist(2,:));
+    d_min = min(dist);
+    disparityRange = max(dist);
+    
+    %% Compute left disparity map
     fprintf('Disparity map calculation started\n');
     %% Allocate Space
     DispMap = zeros(size(left), 'single');
@@ -41,7 +66,7 @@ function [DispMap, DispMap1, DispMap_norm]=disparity_map(left, right, BlockSize,
             if SAD
                 %% If not too far to the right
                 if n < imgWidth-disparityRange
-                    for i = n:BlockSize:n+disparityRange
+                    for i = n:2:n+disparityRange
                         compare_Block = left_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1,i-frame_size_pxl:i+frame_size_pxl+BlockSize-1);
                         if sum(compare_Block(:,1)) == 0
                             diff_Block(index_diff_Block,1) = inf;
@@ -52,7 +77,7 @@ function [DispMap, DispMap1, DispMap_norm]=disparity_map(left, right, BlockSize,
                     end
                 else
                 %% If too far to the right, make search space smaller
-                    for i = n:BlockSize:imgWidth
+                    for i = n:2:imgWidth
                         compare_Block = left_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1,i-frame_size_pxl:i+frame_size_pxl+BlockSize-1);
                         if sum(compare_Block(:,1)) == 0
                             diff_Block(index_diff_Block,1) = inf;
@@ -120,6 +145,7 @@ function [DispMap, DispMap1, DispMap_norm]=disparity_map(left, right, BlockSize,
                 if bestMatchIndex == 1 || bestMatchIndex+1 > size(diff_Block,1)
                     DispMap1(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1) = d;
                 else
+                    
 %                     C1 = diff_Block(bestMatchIndex - 1);
 %                     C2 = diff_Block(bestMatchIndex);
 %                     C3 = diff_Block(bestMatchIndex + 1);
@@ -145,24 +171,14 @@ function [DispMap, DispMap1, DispMap_norm]=disparity_map(left, right, BlockSize,
           fprintf('  Image row %d / %d (%.0f%%)\n', m-y_no_frame, imgHeight, ((m-y_no_frame) / imgHeight) * 100);
 
     end
-    if do_plot
-        figure
-        imagesc(DispMap)
-        
+    if median_filter_on
+        DispMap_norm = normalize_var(DispMap,0,255);
         N = 20;
-        im_pad = padarray(DispMap, [floor(N/2) floor(N/2)]);
+        im_pad = padarray(DispMap_norm, [floor(N/2) floor(N/2)]);
         im_col = im2col(im_pad, [N N], 'sliding');
         sorted_cols = sort(im_col, 1, 'ascend');
         med_vector = sorted_cols(floor(N*N/2) + 1, :);
-        DispMap_filt = col2im(med_vector, [N N], size(im_pad), 'sliding');
-        
-        figure
-        imagesc(DispMap1)
-        figure
-        imagesc(DispMap_filt)
-        DispMap_norm = normalize_var(DispMap,0,255);
-        figure
-        imagesc(DispMap_norm)
+        DispMap_norm = col2im(med_vector, [N N], size(im_pad), 'sliding');
     end
 
 end
