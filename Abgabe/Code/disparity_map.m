@@ -13,7 +13,7 @@
 %           baseline: distance from cameras from calib.txt
 %           SAD : if 1, use SAD, if 0 use NCC
 
-function [DispMap, R, T, DispMap1, DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD)
+function [R, T,DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD)
     %% Search features
     row = size(left,1);
     colum =  size(right,2);
@@ -178,7 +178,6 @@ function [DispMap, R, T, DispMap1, DispMap_norm]=Disparity(left, right, K,BlockS
 
     end
         DispMap_norm = normalize_var(DispMap,0,255);
-        DispMap_norm = uint8(DispMap_norm);
     if median_filter_on
         DispMap_norm = normalize_var(DispMap,0,255);
         N = 20;
@@ -188,5 +187,6 @@ function [DispMap, R, T, DispMap1, DispMap_norm]=Disparity(left, right, K,BlockS
         med_vector = sorted_cols(floor(N*N/2) + 1, :);
         DispMap_norm = col2im(med_vector, [N N], size(im_pad), 'sliding');
     end
+        DispMap_norm = uint8(DispMap_norm);
 
 end

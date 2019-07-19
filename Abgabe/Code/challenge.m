@@ -38,10 +38,7 @@ IGray1 = rgb_to_gray(Image1);
 IGray2 = rgb_to_gray(Image2);
 
 % Disparity Map �ber Block Matching Algorithmus berechnen.
-[T ,R, DispRangeMax, DispRangeMin] = disparity_map(IGray1 , IGray2, K, 3, 2, baseline, median_filter_on, ~NCC_on);
-
-
-D = IGray1;
+[T ,R, D] = disparity_map(IGray1 , IGray2, K, 3, 2, baseline, median_filter_on, ~NCC_on);
 
 %% Validation 
 % Ground Truth laden.
