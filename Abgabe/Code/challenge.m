@@ -48,7 +48,7 @@ disp('T =');
 disp(T);
 fprintf('p = %.2f dB\nElapsed time = %.2f s\n', p, elapsed_time);
 %% Print Disparity map
-if parse_existing==0
+if path_existing==0
     figure
     imagesc(D);
 end
