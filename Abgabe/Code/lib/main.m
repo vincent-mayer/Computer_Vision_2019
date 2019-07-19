@@ -201,14 +201,8 @@ function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, ba
     end
         DispMap_norm = normalize_var(DispMap,0,255);
     if median_filter_on
-        DispMap_norm = normalize_var(DispMap,0,255);
-        N = 20;
-        M = 30;
-        im_pad = padarray(DispMap_norm, [floor(N/2) floor(M/2)]);
-        im_col = im2col(im_pad, [N M], 'sliding');
-        sorted_cols = sort(im_col, 1, 'ascend');
-        med_vector = sorted_cols(floor(N*N/2) + 1, :);
-        DispMap_norm = col2im(med_vector, [N M], size(im_pad), 'sliding');
+
+        
     end
         DispMap_norm = uint8(DispMap_norm);
         
