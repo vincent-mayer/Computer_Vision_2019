@@ -14,7 +14,7 @@ classdef test < matlab.unittest.TestCase
     methods (Test)
         function test_toolboxes(testCase)
             testCase.verifyFalse(check_toolboxes('challenge.m')); % check_toolboxes returns true if more than just standard matlab are used.
-            %testCase.verifyFalse(check_toolboxes('disparity_map.m')); % Tests will be considered failed, if not false
+            testCase.verifyFalse(check_toolboxes('disparity_map.m')); % Tests will be considered failed, if not false
             testCase.verifyFalse(check_toolboxes('verify_dmap.m'));
         end
         function test_variables(testCase)%Loads the .mat file, which has been saved right before calling the test function.
@@ -34,8 +34,8 @@ classdef test < matlab.unittest.TestCase
 		function check_psnr(testCase)
 			global D G ;
             %load ('challenge.mat');
-            p_ours=verify_dmap(D,G);
-            peaksnr=psnr(D,G);
+            p_ours=verify_dmap(D,single(G));
+            peaksnr=psnr(D,single(G),255);
             testCase.verifyEqual(p_ours,peaksnr,'AbsTol',10^-1); %
         end
     end
