@@ -21,7 +21,7 @@ function varargout = start_gui(varargin)
 
 % Edit the above text to modify the response to help start_gui
 
-% Last Modified by GUIDE v2.5 19-Jul-2019 14:41:31
+% Last Modified by GUIDE v2.5 19-Jul-2019 18:38:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,6 +58,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 % Initialisierung
+global directoryname;
 
 % Init der Axes (Plots)
 axes(handles.output_im0);
@@ -97,7 +98,11 @@ set(handles.text_waitbar,'visible','off');
 set(handles.output_status, 'String', 'Status', 'HorizontalAlignment', 'center');
 set(handles.output_status,'BackgroundColor', [0.7 0.7 0.7]);
 
-set(handles.current_directory, 'String', 'no directory selected', 'HorizontalAlignment', 'center');
+if ~isempty(directoryname)
+    set(handles.current_directory, 'String', directoryname, 'HorizontalAlignment', 'center');
+else
+    set(handles.current_directory, 'String', 'no directory selected', 'HorizontalAlignment', 'center');
+end
 set(handles.current_directory,'BackgroundColor', [0.7 0.7 0.7]);
 
 set(handles.result_R,'BackgroundColor', [0.7 0.7 0.7]);
@@ -158,6 +163,7 @@ if exist(path_im0, 'file') && exist(path_im1, 'file')
     challenge;
     
     % Waitbar ausblenden
+    delete(gui_waitbar_handle);
     delete(gui_waitbar_perc_handle);
     set(handles.waitbar,'visible','off');
     set(handles.text_waitbar,'visible','off');
@@ -248,7 +254,7 @@ if logical(mean(directoryname)) ~= 0 && first_time == 0
 end
 
 % �ffnet Benutzeroberfl�che zur Pfadauswahl und gibt Pfad als Char zur�ck
-directoryname = uigetdir;
+directoryname = uigetdir(pwd, 'Open directory containing images, disp0 and calib');
 
 % Pr�ft, ob der R�ckgabewert wie erwartet ein char ist und �ffnet die
 % vorhandenen Bilder, deaktiviert Hinweise, dass kein Pfad ausgew�hlt ist
@@ -512,3 +518,13 @@ function median_filter_on_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of median_filter_on
 global median_filter_on;
 median_filter_on == get(hObject,'Value');
+
+
+% --- Executes during object deletion, before destroying properties.
+function figure1_DeleteFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+clear global
+clear
+

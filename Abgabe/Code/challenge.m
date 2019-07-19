@@ -22,7 +22,7 @@ if exist('directoryname', 'var')
     selpath = directoryname;
     path_existing = 1;
 else
-    selpath = uigetdir(path);
+    selpath = uigetdir(path,'Open directory containing images, disp0 and calib');
     path_existing = 0;
 end   
 
