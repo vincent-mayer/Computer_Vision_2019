@@ -38,10 +38,20 @@ end
 IGray1 = rgb_to_gray(Image1);
 IGray2 = rgb_to_gray(Image2);
 
+% Bild Größe bestimmen
+[img_height img_width] = size(IGray1);
+
+%Parameter für Algo bestimmen
+if img_height>1000
+    BlockSize = 2;
+    Template=6;
+else
+    BlockSize = 1;
+    Template=4;
+end
 % Disparity Map ï¿½ber Block Matching Algorithmus berechnen.
-[T ,R, D] = disparity_map(IGray1 , IGray2, K, 2, 6, baseline, median_filter_on, ~NCC_on, v_min, v_max);
-figure
-imagesc(D);
+[T ,R, D] = disparity_map(IGray1 , IGray2, K, BlockSize, Template, baseline, median_filter_on, ~NCC_on, v_min, v_max);
+
 %% Validation 
 % Ground Truth laden.
 G = read_pfm([selpath '/disp0.pfm']);

@@ -33,18 +33,22 @@ if ~exist('median_filter_on', 'var')
 end
     
 % Bilder laden und in Grauwertbild konvertieren.
-[K K1 Image1 Image2 baseline] = load_path(selpath);
-    row = size(Image1,1);
-    colum =  size(Image1,2);
-    
-    Image1=imresize(Image1,[row/4,colum/4]);
-    Image2=imresize(Image2,[row/4,colum/4]);
+[K, K1, Image1, Image2, baseline, v_min, v_max] = load_path(selpath);
+
 IGray1 = rgb_to_gray(Image1);
 IGray2 = rgb_to_gray(Image2);
+[img_height img_width] = size(IGray1);
+%Parameter für Algo bestimmen
+if img_height>1000
+    BlockSize = 2;
+    Template=6;
+else
+    Block
 
 % Disparity Map ï¿½ber Block Matching Algorithmus berechnen.
-[T ,R, D] = disparity_map(IGray1 , IGray2, K, 3, 2, baseline, median_filter_on, ~NCC_on);
-D = imresize(size(
+[T ,R, D] = disparity_map(IGray1 , IGray2, K, 2, 6, baseline, median_filter_on, ~NCC_on, v_min, v_max);
+figure
+imagesc(D);
 %% Validation 
 % Ground Truth laden.
 G = read_pfm([selpath '/disp0.pfm']);
