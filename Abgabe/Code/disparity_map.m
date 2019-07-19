@@ -24,8 +24,14 @@ if ~exist('median_filter_on', 'var')
 end
 
 % Disparity Map �ber Block Matching Algorithmus berechnen.
+if isempty(v_min)
+    calc_disprange =1;
+else
+    calc_disprange = 0;
+end
+    
 
-[T ,R, D] = main(IGray1 , IGray2, K, BlockSize, Template, baseline, median_filter_on, ~NCC_on, v_min, v_max);
+[T ,R, D] = main(IGray1 , IGray2, K, BlockSize, Template, baseline, median_filter_on, ~NCC_on, v_min, v_max,calc_disprange);
 
 end
 

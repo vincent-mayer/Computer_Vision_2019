@@ -13,12 +13,13 @@
 %           baseline: distance from cameras from calib.txt
 %           SAD : if 1, use SAD, if 0 use NCC
 
-function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD, d_min, disparityRange)
+function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD, d_min, disparityRange,calc_disprange)
     global gui_waitbar_handle;
     global gui_waitbar_text_handle;
     global gui_waitbar_perc_handle;
-    T(1,1) =0;
-    while (T(1,1)<=0.95)
+    T(1) =0;
+    count = 0;
+    while (T(1)>-0.9 && count<10)
         %% Search features
         Merkmale1 = harris_detektor(left,'segment_length',3,'k',0.04,'min_dist',10,'N',80,'do_plot',false);
         Merkmale2 = harris_detektor(right,'segment_length',3,'k',0.04,'min_dist',10,'N',80,'do_plot',false);
@@ -30,11 +31,12 @@ function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, ba
         E = achtpunktalgorithmus(Korrespondenzen_robust, K);
         [T1, R1, T2, R2] = TR_aus_E(E);
         [T, R, lambda, P1] = rekonstruktion(T1, T2, R1, R2, Korrespondenzen_robust, K);
+        count = count+1;
     end
     %% Normalize T to baseline
     T = (T/max(abs(T))*(baseline*10^-3));     
     %% Find min and max disparity range
-    if ~exist(d_min) || ~exist(disparityRange)
+    if calc_disprange==1
         Matrix(1,:) = Korrespondenzen_robust(1,:);
         Matrix(2,:) = Korrespondenzen_robust(2,:);
         Matrix1(1,:) = Korrespondenzen_robust(3,:);

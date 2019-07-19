@@ -19,9 +19,9 @@ function [cam0, cam1, im0, im1, baseline,v_min,v_max] = load_path(path)
     post_baseline = strfind(calib_str,'w');
     
     pre_vmin = strfind(calib_str,'vmin=');
-    post_vmin = strfind(calib_str,'v');
+    post_vmin = strfind(calib_str,'vmax');
     pre_vmax = strfind(calib_str,'vmax=');
-    post_vmax = strfind(calib_str,'d');
+    post_vmax = strfind(calib_str,'dyavg');
     
     cam0 = str2num(calib_str(pos_matstart(1):pos_matend(1)));
     cam1 = str2num(calib_str(pos_matstart(2):pos_matend(2)));
