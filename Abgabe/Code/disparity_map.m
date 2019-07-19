@@ -13,16 +13,10 @@
 %           baseline: distance from cameras from calib.txt
 %           SAD : if 1, use SAD, if 0 use NCC
 
-function [R, T,DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD)
+function [R, T,DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD, d_min, disparityRange)
     %% Search features
-    row = size(left,1);
-    colum =  size(right,2);
-    
-    left=imresize(left,[row/4,colum/4]);
-    right=imresize(right,[row/4,colum/4]);
-    
-    Merkmale1 = harris_detektor(left,'segment_length',3,'k',0.04,'min_dist',4,'N',100,'do_plot',false);
-    Merkmale2 = harris_detektor(right,'segment_length',3,'k',0.04,'min_dist',4,'N',100,'do_plot',false);
+    Merkmale1 = harris_detektor(left,'segment_length',3,'k',0.04,'min_dist',4,'N',50,'do_plot',false);
+    Merkmale2 = harris_detektor(right,'segment_length',3,'k',0.04,'min_dist',4,'N',50,'do_plot',false);
 
     %% Search Corresponding pairs
     Korrespondenzen = punkt_korrespondenzen(left,right,Merkmale1,Merkmale2,'window_length',25,'min_corr', 0.9);
@@ -34,14 +28,20 @@ function [R, T,DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSiz
     %% Normalize T to baseline
     T = (T - min(min(T)) ./ ( max(max(T)) - min(min(T)))*(baseline*10^-3));     
     %% Find min and max disparity range
-    Matrix(1,:) = Korrespondenzen_robust(1,:);
-    Matrix(2,:) = Korrespondenzen_robust(2,:);
-    Matrix1(1,:) = Korrespondenzen_robust(3,:);
-    Matrix1(2,:) = Korrespondenzen_robust(4,:);
-    dist = (Matrix-Matrix1).^2;
-    dist = sqrt(dist(1,:) + dist(2,:));
-    d_min = min(dist);
-    disparityRange = max(dist);
+    if ~exist(d_min) || ~exist(disparityRange)
+        Matrix(1,:) = Korrespondenzen_robust(1,:);
+        Matrix(2,:) = Korrespondenzen_robust(2,:);
+        Matrix1(1,:) = Korrespondenzen_robust(3,:);
+        Matrix1(2,:) = Korrespondenzen_robust(4,:);
+        dist = (Matrix-Matrix1).^2;
+        dist = sqrt(dist(1,:) + dist(2,:));
+        dist = sort(dist);
+    
+        d_min = min(dist);
+%         disparityRange = (dist(end)+dist(end-1)+dist(end-2)+dist(end-3))/4;
+        disparityRange = dist(end);
+    end
+        
     
     %% Compute left disparity map
     fprintf('Disparity map calculation started\n');
@@ -63,7 +63,7 @@ function [R, T,DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSiz
     left_frame(y_no_frame:y_no_frame+imgHeight-1,x_no_frame:x_no_frame+imgWidth-1) = double(left);
     %% Compute N for NCC
     N = BlockSize*((2*halfTemplateSize+1))^2;
-    for m = y_no_frame:BlockSize:ceil(y_no_frame+imgHeight-1) % Run through imgHeights/Blocksize rows
+    for m = y_no_frame:BlockSize:ceil(y_no_frame+imgHeight-BlockSize+1) % Run through imgHeights/Blocksize rows
 
         for n = x_no_frame:BlockSize:x_no_frame+(imgWidth-BlockSize) % Run through imgWidth/Blocksize cols
             template = right_frame(m-frame_size_pxl:m+frame_size_pxl+BlockSize-1, n-frame_size_pxl:n+frame_size_pxl+BlockSize-1);
@@ -188,5 +188,4 @@ function [R, T,DispMap_norm]=Disparity(left, right, K,BlockSize, halfTemplateSiz
         DispMap_norm = col2im(med_vector, [N N], size(im_pad), 'sliding');
     end
         DispMap_norm = uint8(DispMap_norm);
-
 end
