@@ -13,14 +13,22 @@
 %           baseline: distance from cameras from calib.txt
 %           SAD : if 1, use SAD, if 0 use NCC
 
-function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD, d_min, disparityRange)
+function [DispMap, R, T, DispMap1, DispMap_norm]=disparity_map(left, right, K,BlockSize, halfTemplateSize, baseline, median_filter_on,SAD)
+    %% If not started from GUI, create waitbar.
     global gui_waitbar_handle;
-    global gui_waitbar_text_handle;
-    global gui_waitbar_perc_handle;
+    if isempty(gui_waitbar_handle)
+        dis_waitbar = waitbar(0, 'Performin Block Matching');
+    end
 
     %% Search features
-    Merkmale1 = harris_detektor(left,'segment_length',3,'k',0.04,'min_dist',4,'N',50,'do_plot',false);
-    Merkmale2 = harris_detektor(right,'segment_length',3,'k',0.04,'min_dist',4,'N',50,'do_plot',false);
+    row = size(left,1);
+    colum =  size(right,2);
+    
+    left=imresize(left,[row/4,colum/4]);
+    right=imresize(right,[row/4,colum/4]);
+    
+    Merkmale1 = harris_detektor(left,'segment_length',3,'k',0.04,'min_dist',4,'N',100,'do_plot',false);
+    Merkmale2 = harris_detektor(right,'segment_length',3,'k',0.04,'min_dist',4,'N',100,'do_plot',false);
 
     %% Search Corresponding pairs
     Korrespondenzen = punkt_korrespondenzen(left,right,Merkmale1,Merkmale2,'window_length',25,'min_corr', 0.9);
@@ -32,31 +40,17 @@ function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, ba
     %% Normalize T to baseline
     T = (T - min(min(T)) ./ ( max(max(T)) - min(min(T)))*(baseline*10^-3));     
     %% Find min and max disparity range
-    if ~exist(d_min) || ~exist(disparityRange)
-        Matrix(1,:) = Korrespondenzen_robust(1,:);
-        Matrix(2,:) = Korrespondenzen_robust(2,:);
-        Matrix1(1,:) = Korrespondenzen_robust(3,:);
-        Matrix1(2,:) = Korrespondenzen_robust(4,:);
-        dist = (Matrix-Matrix1).^2;
-        dist = sqrt(dist(1,:) + dist(2,:));
-        dist = sort(dist);
+    Matrix(1,:) = Korrespondenzen_robust(1,:);
+    Matrix(2,:) = Korrespondenzen_robust(2,:);
+    Matrix1(1,:) = Korrespondenzen_robust(3,:);
+    Matrix1(2,:) = Korrespondenzen_robust(4,:);
+    dist = (Matrix-Matrix1).^2;
+    dist = sqrt(dist(1,:) + dist(2,:));
+    d_min = min(dist);
+    disparityRange = max(dist);
     
-        d_min = min(dist);
-%         disparityRange = (dist(end)+dist(end-1)+dist(end-2)+dist(end-3))/4;
-        disparityRange = dist(end);
-    end
-        
-    
-   fprintf('Disparity map calculation started\n');
-   %% If not started from GUI, create waitbar.
-    if isempty(gui_waitbar_handle)
-        dis_waitbar = waitbar(0, 'Performing Block Matching, Progress:');
-        set(gui_waitbar_handle, 'XData', [0 0 0 0]);
-        set(gui_waitbar_perc_handle, 'String', '0.0 %');
-        drawnow;
-    else
-        set(gui_waitbar_text_handle, 'String', 'Performing Block Matching:');
-    end
+    %% Compute left disparity map
+    fprintf('Disparity map calculation started\n');
     %% Allocate Space
     DispMap = zeros(size(left), 'single');
     DispMap1 = DispMap;
@@ -154,10 +148,10 @@ function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, ba
                 [~,sortedIndexes] = sort(diff_Block,'descend');
                 bestMatchIndex = sortedIndexes(1,1);
                 d = (bestMatchIndex-1)*BlockSize;
-                if d > d_min
+                if d >= d_min
                     DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=d;
                 else
-                    second_best_disp = sortedIndexes(sortedIndexes > d_min);
+                    second_best_disp = sortedIndexes(sortedIndexes >= d_min);
                     DispMap(m-frame_size_pxl:m-frame_size_pxl+BlockSize-1,n-frame_size_pxl:n-frame_size_pxl+BlockSize-1)=second_best_disp(1);
                 end
                 if bestMatchIndex == 1 || bestMatchIndex+1 > size(diff_Block,1)
@@ -185,19 +179,19 @@ function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, ba
                 end
             end
         end
-        
-        %% Update waitbar
+
         progress = ((m-y_no_frame) / imgHeight);
         fprintf('  Image row %d / %d (%.0f%%)\n', m-y_no_frame, imgHeight, (progress * 100));
         if ~isempty(gui_waitbar_handle)
             set(gui_waitbar_handle, 'XData', [0 0 progress progress]);
-            set(gui_waitbar_perc_handle, 'String', [num2str(progress*100,'%.1f') ' %']);
             drawnow;
         else
             waitbar(progess, dis_waitbar);
         end
+
     end
         DispMap_norm = normalize_var(DispMap,0,255);
+        DispMap_norm = uint8(DispMap_norm);
     if median_filter_on
         DispMap_norm = normalize_var(DispMap,0,255);
         N = 20;
@@ -207,9 +201,9 @@ function [R, T,DispMap_norm]=main(left, right, K,BlockSize, halfTemplateSize, ba
         med_vector = sorted_cols(floor(N*N/2) + 1, :);
         DispMap_norm = col2im(med_vector, [N N], size(im_pad), 'sliding');
     end
-        DispMap_norm = uint8(DispMap_norm);
-        
+    
     if isempty(gui_waitbar_handle)
         close(dis_waitbar);
     end
+
 end

@@ -27,9 +27,6 @@ function [Korrespondenzen_robust , largest_set_size] = F_ransac(Korrespondenzen,
     %% Waitbar erzeugen
     if isempty(gui_waitbar_handle)
         dis_waitbar = waitbar(0, 'Performing RANSAC Algorithm, Progress:');
-        set(gui_waitbar_handle, 'XData', [0 0 0 0]);
-        set(gui_waitbar_perc_handle, 'String', '0.0 %');
-        drawnow;
     else
         set(gui_waitbar_text_handle, 'String', 'Performing RANSAC Algorithm:');
     end
@@ -100,7 +97,7 @@ function [Korrespondenzen_robust , largest_set_size] = F_ransac(Korrespondenzen,
         progress = i/num_iterations;
         if ~isempty(gui_waitbar_handle)
             set(gui_waitbar_handle, 'XData', [0 0 progress progress]);
-            set(gui_waitbar_perc_handle, 'String', [num2str(progress*100,'%.1f') ' %']);
+            set(gui_waitbar_perc_handle, 'String', [num2str(progress,2) '%']);
             drawnow;
         else
             waitbar(progess, dis_waitbar);

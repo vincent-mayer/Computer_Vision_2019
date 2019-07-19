@@ -131,34 +131,26 @@ global DisMap;
 global NCC_on;
 global median_filter_on;
 global gui_waitbar_handle;
-global gui_waitbar_text_handle;
-global gui_waitbar_perc_handle;
 
-gui_waitbar_text_handle = handles.text_waitbar;
-
-path_im0 = [directoryname filesep 'im0.png'];
-path_im1 = [directoryname filesep 'im1.png'];
-
+if contains(directoryname,'/')
+    path_im0 = [directoryname '/im0.png'];
+    path_im1 = [directoryname '/im1.png'];
+else
+    path_im0 = [directoryname '\im0.png'];
+    path_im1 = [directoryname '\im1.png'];
+end
 if exist(path_im0, 'file') && exist(path_im1, 'file')
     % Waitbar anzeigen
-    if ~isempty(gui_waitbar_handle)
-        delete(gui_waitbar_handle);
-    end
-    if ~isempty(gui_waitbar_perc_handle)
-        delete(gui_waitbar_perc_handle);
-    end
+    if ~is
+    delete(gui_waitbar_handle);
     set(handles.waitbar,'visible','on');
-    set(gui_waitbar_text_handle, 'String', 'Calculation started!');
-    set(gui_waitbar_text_handle,'visible','on');
+    set(handles.text_waitbar,'visible','on');
     gui_waitbar_handle = patch(handles.waitbar, [0 0 0 0], [0 1 1 0], [0 1 0], 'EdgeColor', 'none');
-    gui_waitbar_perc_handle = text(handles.waitbar, 0.9, 0.5, '0.0 %');
-    drawnow;
     
     % Ausf�hrung des Challenge Skripts zur Berechnung der Disparity Map
     challenge;
     
     % Waitbar ausblenden
-    delete(gui_waitbar_perc_handle);
     set(handles.waitbar,'visible','off');
     set(handles.text_waitbar,'visible','off');
     
