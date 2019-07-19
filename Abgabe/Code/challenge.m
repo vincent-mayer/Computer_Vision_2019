@@ -49,7 +49,3 @@ disp(T);
 fprintf('p = %.2f dB\nElapsed time = %.2f s\n', p, elapsed_time);
 
 
-%% Display Disparity
-figure
-imagesc(D);
-
